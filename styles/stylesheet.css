@@ -1,0 +1,29 @@
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* align-content: center; */
+  align-items: center;
+  box-sizing: border-box;
+}
+
+#gameboard {
+  margin-top: 250px;
+  align-self: center;
+  display: grid;
+  grid-template-columns: 100px 100px 100px;
+  font-size: 25px;
+}
+
+#gameboard > div {
+  border: 1px solid black;
+  height: 100px;
+  width: 100px;
+}
+
+.square > p {
+  text-align: center;
+  margin-top: 33.3%;
+  height: 33.3%;
+  padding: 0;
+}
