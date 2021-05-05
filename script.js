@@ -28,48 +28,24 @@ const displayCurrentBoard = (function () {
   return { updateDisplay };
 })();
 
-// const makeplayer = (name, piece) => {
-//   const newplayer = player(name, piece);
-//   console.log(newplayer.getName() + "selected");
-//   return { newplayer };
-// };
+const gameStart = (function () {
+  const firstplayer = player("firstplayer", "x");
+  const otherplayer = player("otherplayer", "0");
+  const squares = document.querySelectorAll(".square p");
+  squares.forEach(function (square) {
+    square.addEventListener("click", function (event) {
+      const squareID = event.target.getAttribute("id");
 
-// const makeplayerone = function () {
-//   player1 = player("player1", "0");
-//   console.log("player1 selected");
-//   return player1;
-// };
-
-const makeplayer_ = function (name, piece, outarg) {
-  tmp = player(name, piece);
-  outarg.getName = tmp.getName;
-  outarg.getPlayerPiece = tmp.getPlayerPiece;
-};
-
-// const makeplayer = function (name, piece) {
-//   let playervariablename = name;
-//   console.log(playervariablename);
-//   playervariablename = player(name, piece);
-//   console.log(playervariablename.getName() + "selected");
-//   /* return newplayer; */
-// };
-
-const makeplayertwo = function () {
-  const player2 = player("player2", "x");
-  console.log("player2 selected");
-  return player2;
-};
-
-const setupButtons = function () {
-  const player1Button = document.getElementById("player1Div");
-  const player2Button = document.getElementById("player2Div");
-  let player1;
-  player1Button.addEventListener("click", function () {
-    makeplayer_("player1", "0", player1);
-    console.log(player1.getName());
-    console.log("clicked");
+      gameboard.pickBoardSquare(squareID, firstplayer);
+    });
   });
-  player2Button.addEventListener("click", makeplayertwo);
-};
+})();
 
-setupButtons();
+// tenho de por isto dentro do gameboard acho eu para keep track de quem é que está a jogar
+const switchPlayers = function (firstplayer, otherplayer) {
+  if (switchPlayers === firstplayer) {
+    return otherplayer;
+  } else {
+    return firstplayer;
+  }
+};
