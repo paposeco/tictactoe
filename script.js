@@ -22,7 +22,7 @@ const player = function (name, playerPiece) {
 };
 
 const gameboard = (function () {
-  const currentBoard = [
+  let currentBoard = [
     { 0: " " },
     { 1: " " },
     { 2: " " },
@@ -36,6 +36,22 @@ const gameboard = (function () {
   const firstplayer = player("firstplayer", "x");
   const otherplayer = player("otherplayer", "0");
   let currentplayer = firstplayer;
+  const restartgame = function () {
+    currentBoard = [
+      { 0: " " },
+      { 1: " " },
+      { 2: " " },
+      { 3: " " },
+      { 4: " " },
+      { 5: " " },
+      { 6: " " },
+      { 7: " " },
+      { 8: " " },
+    ];
+    console.log("restarted");
+    displayCurrentBoard.updateDisplay(undefined, undefined, currentBoard);
+  };
+  console.log(currentBoard);
   const switchPlayers = function (firstplayer, otherplayer, currentPlayer) {
     if (currentPlayer === firstplayer) {
       return otherplayer;
@@ -57,10 +73,10 @@ const gameboard = (function () {
     );
     const tie = checkForTie(currentBoard);
     currentplayer = switchPlayers(firstplayer, otherplayer, currentplayer);
-
-    return displayCurrentBoard.updateDisplay(winner, tie);
+    return displayCurrentBoard.updateDisplay(winner, tie, currentBoard);
   };
-  return { currentBoard, pickBoardSquare };
+
+  return { currentBoard, pickBoardSquare, restartgame };
 })();
 
 const getSelectedSquare = function (event) {
@@ -88,7 +104,8 @@ const displayCurrentBoard = (function () {
   const divs = document.querySelectorAll(".square p");
   const divsarray = Array.from(divs, (div) => div);
   const currentBoard = gameboard.currentBoard;
-  const updateDisplay = function (winner, tie) {
+  const winnerPara = document.getElementById("winner");
+  const updateDisplay = function (winner, tie, currentBoard) {
     for (i = 0; i < divsarray.length; i++) {
       divsarray[i].textContent = currentBoard[i][i];
     }
@@ -96,12 +113,18 @@ const displayCurrentBoard = (function () {
       divs.forEach(function (square) {
         square.removeEventListener("click", getSelectedSquare);
       });
+      let playersNames = playeridentities.selectedNames();
+      if (winner === "firstplayer") {
+        winnerPara.textContent = playersNames[0] + " is the winner!";
+      } else {
+        winnerPara.textContent = playersNames[1] + " is the winner!";
+      }
     }
     if (tie === "It's a tie") {
       console.log(tie);
     }
   };
-  updateDisplay(undefined, undefined);
+  updateDisplay(undefined, undefined, currentBoard);
   return { updateDisplay };
 })();
 
@@ -176,3 +199,14 @@ const checkForWinner = function (
   }
   return winner;
 };
+
+const restartgameListener = (function () {
+  const restartbuttonB = document.getElementById("restartbutton");
+  // const functionRestart = gameboard.restartgame();
+  restartbuttonB.addEventListener("click", function () {
+    gameboard.restartgame();
+  });
+})();
+
+//let players change names
+//anounce game is ready
