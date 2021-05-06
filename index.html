@@ -8,31 +8,25 @@
   </head>
   <body>
     <div id="players">
-      <p>First players picks 0 or x</p>
-      <div id="circlediv">
-        <p>Play with 0</p>
-      </div>
-      <div id="crossdiv">
-        <p>Play with x</p>
-      </div>
+      <form id="playersinfo">
+        <label for="firstplayer">Name of first player:</label>
+        <input type="text" id="firstplayer" name="firstplayer" required />
+        <label for="otherplayer">Name of second player:</label>
+        <input type="text" id="otherplayer" name="otherplayer" required />
+        <input type="submit" id="submitinput" value="Submit" />
+      </form>
     </div>
 
     <div id="gameboard">
-      <!-- <div id="firstline"> -->
+      <div class="square"><p id="0"></p></div>
       <div class="square"><p id="1"></p></div>
       <div class="square"><p id="2"></p></div>
       <div class="square"><p id="3"></p></div>
-      <!-- </div> -->
-      <!-- <div id="midline"> -->
       <div class="square"><p id="4"></p></div>
       <div class="square"><p id="5"></p></div>
       <div class="square"><p id="6"></p></div>
-      <!-- </div> -->
-      <!-- <div id="lastline"> -->
       <div class="square"><p id="7"></p></div>
       <div class="square"><p id="8"></p></div>
-      <div class="square"><p id="9"></p></div>
-      <!-- </div> -->
     </div>
     <script src="script.js"></script>
   </body>
