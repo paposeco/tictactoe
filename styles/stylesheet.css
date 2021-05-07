@@ -29,11 +29,29 @@ body {
   padding: 0;
 }
 
-#winnerdiv {
+#textareadiv {
   height: 200px;
   width: 400px;
 }
 
+#winnerdiv {
+  height: 50px;
+  width: 100%;
+}
+
 #winnerdiv > p {
   text-align: center;
+}
+
+#gameReady {
+  height: 150px;
+  width: 100%;
+}
+
+.hide {
+  visibility: hidden;
+}
+
+.show {
+  visibility: visible;
 }

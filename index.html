@@ -8,16 +8,24 @@
   </head>
   <body>
     <div id="players">
+      <p>Pick a name for each player and press Start.</p>
       <form id="playersinfo">
-        <label for="firstplayer">Name of first player:</label>
+        <label for="firstplayer">First player:</label>
         <input type="text" id="firstplayer" name="firstplayer" required />
-        <label for="otherplayer">Name of second player:</label>
+        <label for="otherplayer">Second player:</label>
         <input type="text" id="otherplayer" name="otherplayer" required />
-        <input type="submit" id="submitinput" value="Submit" />
+        <input type="submit" id="submitinput" value="Start" />
       </form>
     </div>
-    <div id="winnerdiv">
-      <p id="winner"></p>
+    <div id="textareadiv">
+      <div id="winnerdiv">
+        <p id="winner"></p>
+      </div>
+      <div id="gameReady" class="hide">
+        <p style="text-align: center">Game is ready!</p>
+        <p>First player picks a square. Second player picks next.</p>
+        <p>Continue until one player fills a line with 3 crosses or circles.</p>
+      </div>
     </div>
     <div id="gameboard">
       <div class="square"><p id="0"></p></div>

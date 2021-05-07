@@ -8,6 +8,9 @@ const playeridentities = (function () {
     event.preventDefault();
     firstplayerName = firstplayerNameInput.value;
     otherplayerName = otherplayerNameInput.value;
+    const starttext = document.getElementById("gameReady");
+    starttext.classList.remove("hide");
+    gameboard.restartgame();
   });
   const selectedNames = function () {
     return [firstplayerName, otherplayerName];
@@ -48,10 +51,10 @@ const gameboard = (function () {
       { 7: " " },
       { 8: " " },
     ];
-    console.log("restarted");
+    //console.log("restarted");
     displayCurrentBoard.updateDisplay(undefined, undefined, currentBoard);
   };
-  console.log(currentBoard);
+  //console.log(currentBoard);
   const switchPlayers = function (firstplayer, otherplayer, currentPlayer) {
     if (currentPlayer === firstplayer) {
       return otherplayer;
@@ -85,11 +88,13 @@ const getSelectedSquare = function (event) {
     alert("Please pick your names before playing.");
     return "please pick your names first";
   }
+
   const squareID = event.target.getAttribute("id");
   if (event.target.textContent != " ") {
     return;
   }
-
+  const starttext = document.getElementById("gameReady");
+  starttext.classList.add("hide");
   gameboard.pickBoardSquare(squareID);
 };
 
@@ -122,6 +127,7 @@ const displayCurrentBoard = (function () {
     }
     if (tie === "It's a tie") {
       console.log(tie);
+      winnerPara.textContent = "It's a tie!";
     }
   };
   updateDisplay(undefined, undefined, currentBoard);
@@ -194,7 +200,7 @@ const checkForWinner = function (
       } else {
         playerNameWinner = playerNames[1];
       }
-      console.log("we have a winner: " + playerNameWinner);
+      //console.log("we have a winner: " + playerNameWinner);
     }
   }
   return winner;
@@ -208,5 +214,4 @@ const restartgameListener = (function () {
   });
 })();
 
-//let players change names
 //anounce game is ready
