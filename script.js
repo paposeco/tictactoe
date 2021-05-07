@@ -10,7 +10,7 @@ const playeridentities = (function () {
     otherplayerName = otherplayerNameInput.value;
     const starttext = document.getElementById("gameReady");
     starttext.classList.remove("hide");
-    gameboard.restartgame();
+    gameboardAIfirstplayer.restartgame();
   });
   const selectedNames = function () {
     return [firstplayerName, otherplayerName];
@@ -24,7 +24,46 @@ const player = function (name, playerPiece) {
   return { getName, getPlayerPiece };
 };
 
-const gameboard = (function () {
+const getPlayers = (function () {
+  const formAI = document.getElementById("playersinfoAI");
+  let output = [];
+  let firstplayerName;
+  let otherplayerName;
+  formAI.addEventListener("submit", function (e) {
+    e.preventDefault();
+    let data = new FormData(formAI);
+    for (const entry of data) {
+      output.push(entry[1]);
+    }
+    if (output[0] === "firstplayer") {
+      firstplayerName = window.prompt("Name of Firstplayer:");
+    } else {
+      firstplayerName = output[0];
+    }
+    if (output[1] === "secondplayer") {
+      otherplayerName = window.prompt("Name of Secondplayer:");
+    } else {
+      otherplayerName = output[1];
+    }
+    if (firstplayerName === "firstplayerAI") {
+      setTimeout(
+        firstplayerAIfunc.bind(
+          null,
+          undefined,
+          undefined,
+          gameboardAIfirstplayer.currentBoard
+        ),
+        500
+      );
+    }
+  });
+  const selectedNames = function () {
+    return [firstplayerName, otherplayerName];
+  };
+  return { selectedNames };
+})();
+
+const gameboardAIfirstplayer = (function () {
   let currentBoard = [
     { 0: " " },
     { 1: " " },
@@ -36,9 +75,11 @@ const gameboard = (function () {
     { 7: " " },
     { 8: " " },
   ];
+  let players = getPlayers.selectedNames();
   const firstplayer = player("firstplayer", "x");
-  const otherplayer = player("otherplayer", "0");
-  let currentplayer = firstplayer;
+  const otherplayer = player("otherplayer", "0"); // acho que isto nao esta a ser guardado porque a funcao esta a correr logo no inicio, em vez de ser depois do submit. tenho de ver como se fazia anteshmmm
+  // console.log(otherplayer);
+  let currentplayer = otherplayer; // otherplayer plays next
   const restartgame = function () {
     currentBoard = [
       { 0: " " },
@@ -51,7 +92,6 @@ const gameboard = (function () {
       { 7: " " },
       { 8: " " },
     ];
-    //console.log("restarted");
     displayCurrentBoard.updateDisplay(undefined, undefined, currentBoard);
   };
   //console.log(currentBoard);
@@ -63,27 +103,85 @@ const gameboard = (function () {
     }
   };
   const pickBoardSquare = function (square) {
+    console.log("selected square: " + square);
     const playerPiece = currentplayer.getPlayerPiece();
     const picked = currentBoard.findIndex(
       (element) => Object.getOwnPropertyNames(element)[0] === square
     );
     currentBoard[picked][picked] = playerPiece;
-    const winner = checkForWinner(
-      square,
-      currentBoard,
-      playerPiece,
-      currentplayer
-    );
+    const winner = checkForWinner(square, currentBoard, "0", otherplayer);
     const tie = checkForTie(currentBoard);
-    currentplayer = switchPlayers(firstplayer, otherplayer, currentplayer);
-    return displayCurrentBoard.updateDisplay(winner, tie, currentBoard);
+    //currentplayer = switchPlayers(firstplayer, otherplayer, currentplayer); nao é preciso neste caso
+    displayCurrentBoard.updateDisplay(winner, tie, currentBoard);
+    // console.log(currentBoard);
+    //firstplayerAIfunc(currentBoard);
+    setTimeout(firstplayerAIfunc.bind(null, winner, tie, currentBoard), 1000);
   };
 
   return { currentBoard, pickBoardSquare, restartgame };
 })();
 
+// const gameboard = (function () {
+//   let currentBoard = [
+//     { 0: " " },
+//     { 1: " " },
+//     { 2: " " },
+//     { 3: " " },
+//     { 4: " " },
+//     { 5: " " },
+//     { 6: " " },
+//     { 7: " " },
+//     { 8: " " },
+//   ];
+//   let players = getPlayers.selectedNames();
+//   const firstplayer = player(players[0], "x");
+//   const otherplayer = player(players[1], "0");
+//   let currentplayer = firstplayer;
+//   const restartgame = function () {
+//     currentBoard = [
+//       { 0: " " },
+//       { 1: " " },
+//       { 2: " " },
+//       { 3: " " },
+//       { 4: " " },
+//       { 5: " " },
+//       { 6: " " },
+//       { 7: " " },
+//       { 8: " " },
+//     ];
+//     //console.log("restarted");
+//     displayCurrentBoard.updateDisplay(undefined, undefined, currentBoard);
+//   };
+//   //console.log(currentBoard);
+//   const switchPlayers = function (firstplayer, otherplayer, currentPlayer) {
+//     if (currentPlayer === firstplayer) {
+//       return otherplayer;
+//     } else {
+//       return firstplayer;
+//     }
+//   };
+//   const pickBoardSquare = function (square) {
+//     const playerPiece = currentplayer.getPlayerPiece();
+//     const picked = currentBoard.findIndex(
+//       (element) => Object.getOwnPropertyNames(element)[0] === square
+//     );
+//     currentBoard[picked][picked] = playerPiece;
+//     const winner = checkForWinner(
+//       square,
+//       currentBoard,
+//       playerPiece,
+//       currentplayer
+//     );
+//     const tie = checkForTie(currentBoard);
+//     currentplayer = switchPlayers(firstplayer, otherplayer, currentplayer);
+//     return displayCurrentBoard.updateDisplay(winner, tie, currentBoard);
+//   };
+//   console.log(currentBoard);
+//   return { currentBoard, pickBoardSquare, restartgame };
+// })();
+
 const getSelectedSquare = function (event) {
-  let playerNames = playeridentities.selectedNames();
+  let playerNames = getPlayers.selectedNames();
   if (playerNames[0] === undefined || playerNames[1] === undefined) {
     alert("Please pick your names before playing.");
     return "please pick your names first";
@@ -95,7 +193,9 @@ const getSelectedSquare = function (event) {
   }
   const starttext = document.getElementById("gameReady");
   starttext.classList.add("hide");
-  gameboard.pickBoardSquare(squareID);
+  gameboardAIfirstplayer.pickBoardSquare(squareID);
+  const currentBoard = gameboardAIfirstplayer.currentBoard;
+  //console.log(currentBoard);
 };
 
 const gameStart = (function () {
@@ -108,7 +208,7 @@ const gameStart = (function () {
 const displayCurrentBoard = (function () {
   const divs = document.querySelectorAll(".square p");
   const divsarray = Array.from(divs, (div) => div);
-  const currentBoard = gameboard.currentBoard;
+  const currentBoard = gameboardAIfirstplayer.currentBoard;
   const winnerPara = document.getElementById("winner");
   const updateDisplay = function (winner, tie, currentBoard) {
     for (i = 0; i < divsarray.length; i++) {
@@ -133,6 +233,31 @@ const displayCurrentBoard = (function () {
   updateDisplay(undefined, undefined, currentBoard);
   return { updateDisplay };
 })();
+
+const firstplayerAIfunc = function (winner, tie, currentBoard) {
+  let availableSquares = [];
+  currentBoard.forEach(function (obj) {
+    if (Object.values(obj)[0] === " ") {
+      availableSquares.push(obj);
+    }
+  });
+  const getRandomIntInclusive = function (min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  };
+  const indexSelected = getRandomIntInclusive(0, availableSquares.length - 1);
+  //  console.log("available squares");
+
+  const squareSelected = Object.getOwnPropertyNames(
+    availableSquares[indexSelected]
+  );
+  console.log(squareSelected[0]);
+  currentBoard[squareSelected[0]][squareSelected[0]] = "x";
+  //  console.log(currentBoard);
+  checkForWinner(squareSelected[0], currentBoard, "x", firstplayer);
+  return displayCurrentBoard.updateDisplay(winner, tie, currentBoard);
+};
 
 const checkForTie = function (currentBoard) {
   let objectValues = [];
@@ -210,8 +335,9 @@ const restartgameListener = (function () {
   const restartbuttonB = document.getElementById("restartbutton");
   // const functionRestart = gameboard.restartgame();
   restartbuttonB.addEventListener("click", function () {
-    gameboard.restartgame();
+    gameboardAIfirstplayer.restartgame();
   });
 })();
 
-//anounce game is ready
+//check who is playing and run different functions. leave current functions as they are
+// dont let second player play while firstplayer hasnt played or decreased timeout on first play
