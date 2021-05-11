@@ -1,23 +1,3 @@
-const playeridentities = (function () {
-  const inputSubmit = document.getElementById("submitinput");
-  const firstplayerNameInput = document.getElementById("firstplayer");
-  const otherplayerNameInput = document.getElementById("otherplayer");
-  let firstplayerName;
-  let otherplayerName;
-  inputSubmit.addEventListener("click", function (event) {
-    event.preventDefault();
-    firstplayerName = firstplayerNameInput.value;
-    otherplayerName = otherplayerNameInput.value;
-    const starttext = document.getElementById("gameReady");
-    starttext.classList.remove("hide");
-    gameboardAIfirstplayer.restartgame();
-  });
-  const selectedNames = function () {
-    return [firstplayerName, otherplayerName];
-  };
-  return { selectedNames };
-})();
-
 const player = function (name, playerPiece) {
   const getName = () => name;
   const getPlayerPiece = () => playerPiece;
@@ -37,6 +17,7 @@ const getPlayers = (function () {
     }
     if (output[0] === "firstplayer") {
       firstplayerName = window.prompt("Name of Firstplayer:");
+      gameStart();
     } else {
       firstplayerName = output[0];
     }
@@ -45,17 +26,32 @@ const getPlayers = (function () {
     } else {
       otherplayerName = output[1];
     }
+    if (
+      firstplayerName === "firstplayerAI" &&
+      otherplayerName === "secondplayerAI"
+    ) {
+      return window.alert(
+        "The computer doesn't like to play against itself. One human must always play."
+      );
+    }
     if (firstplayerName === "firstplayerAI") {
       setTimeout(
-        firstplayerAIfunc.bind(
+        playerAIfunc.bind(
           null,
+          undefined,
           undefined,
           undefined,
           gameboardAIfirstplayer.currentBoard
         ),
-        500
+        300
       );
+      setTimeout(gameStart, 400);
     }
+    if (otherplayerName === "secondplayerAI") {
+      gameStart();
+    }
+    const starttext = document.getElementById("gameReady");
+    starttext.classList.remove("hide");
   });
   const selectedNames = function () {
     return [firstplayerName, otherplayerName];
@@ -65,22 +61,22 @@ const getPlayers = (function () {
 
 const gameboardAIfirstplayer = (function () {
   let currentBoard = [
-    { 0: " " },
+    { 0: "0" },
     { 1: " " },
-    { 2: " " },
-    { 3: " " },
+    { 2: "x" },
+    { 3: "x" },
     { 4: " " },
     { 5: " " },
-    { 6: " " },
-    { 7: " " },
-    { 8: " " },
+    { 6: "x" },
+    { 7: "0" },
+    { 8: "0" },
   ];
-  let players = getPlayers.selectedNames();
   const firstplayer = player("firstplayer", "x");
-  const otherplayer = player("otherplayer", "0"); // acho que isto nao esta a ser guardado porque a funcao esta a correr logo no inicio, em vez de ser depois do submit. tenho de ver como se fazia anteshmmm
-  // console.log(otherplayer);
-  let currentplayer = otherplayer; // otherplayer plays next
+  const otherplayer = player("otherplayer", "0");
+  let currentplayer = firstplayer;
+  let playerNames;
   const restartgame = function () {
+    //currentplayer = firstplayer;
     currentBoard = [
       { 0: " " },
       { 1: " " },
@@ -92,9 +88,20 @@ const gameboardAIfirstplayer = (function () {
       { 7: " " },
       { 8: " " },
     ];
+    if (playersNames[0] === "firstplayerAI") {
+      setTimeout(
+        playerAIfunc.bind(
+          null,
+          firstplayer,
+          undefined,
+          undefined,
+          currentBoard
+        ),
+        300
+      );
+    }
     displayCurrentBoard.updateDisplay(undefined, undefined, currentBoard);
   };
-  //console.log(currentBoard);
   const switchPlayers = function (firstplayer, otherplayer, currentPlayer) {
     if (currentPlayer === firstplayer) {
       return otherplayer;
@@ -103,85 +110,46 @@ const gameboardAIfirstplayer = (function () {
     }
   };
   const pickBoardSquare = function (square) {
-    console.log("selected square: " + square);
+    playersNames = getPlayers.selectedNames();
+    if (playersNames[1] === "secondplayerAI") {
+      currentplayer = firstplayer;
+    }
+    if (playersNames[0] === "firstplayerAI") {
+      currentplayer = otherplayer;
+    }
     const playerPiece = currentplayer.getPlayerPiece();
     const picked = currentBoard.findIndex(
       (element) => Object.getOwnPropertyNames(element)[0] === square
     );
     currentBoard[picked][picked] = playerPiece;
-    const winner = checkForWinner(square, currentBoard, "0", otherplayer);
+    const winner = checkForWinner(
+      square,
+      currentBoard,
+      playerPiece,
+      currentplayer
+    );
     const tie = checkForTie(currentBoard);
-    //currentplayer = switchPlayers(firstplayer, otherplayer, currentplayer); nao é preciso neste caso
     displayCurrentBoard.updateDisplay(winner, tie, currentBoard);
-    // console.log(currentBoard);
-    //firstplayerAIfunc(currentBoard);
-    setTimeout(firstplayerAIfunc.bind(null, winner, tie, currentBoard), 1000);
+    if (playersNames[0] === "firstplayerAI") {
+      setTimeout(
+        playerAIfunc.bind(null, firstplayer, winner, tie, currentBoard),
+        1000
+      );
+    }
+    if (playersNames[1] === "secondplayerAI") {
+      setTimeout(
+        playerAIfunc.bind(null, otherplayer, winner, tie, currentBoard),
+        1000
+      );
+    }
+    currentplayer = switchPlayers(firstplayer, otherplayer, currentplayer);
   };
 
   return { currentBoard, pickBoardSquare, restartgame };
 })();
 
-// const gameboard = (function () {
-//   let currentBoard = [
-//     { 0: " " },
-//     { 1: " " },
-//     { 2: " " },
-//     { 3: " " },
-//     { 4: " " },
-//     { 5: " " },
-//     { 6: " " },
-//     { 7: " " },
-//     { 8: " " },
-//   ];
-//   let players = getPlayers.selectedNames();
-//   const firstplayer = player(players[0], "x");
-//   const otherplayer = player(players[1], "0");
-//   let currentplayer = firstplayer;
-//   const restartgame = function () {
-//     currentBoard = [
-//       { 0: " " },
-//       { 1: " " },
-//       { 2: " " },
-//       { 3: " " },
-//       { 4: " " },
-//       { 5: " " },
-//       { 6: " " },
-//       { 7: " " },
-//       { 8: " " },
-//     ];
-//     //console.log("restarted");
-//     displayCurrentBoard.updateDisplay(undefined, undefined, currentBoard);
-//   };
-//   //console.log(currentBoard);
-//   const switchPlayers = function (firstplayer, otherplayer, currentPlayer) {
-//     if (currentPlayer === firstplayer) {
-//       return otherplayer;
-//     } else {
-//       return firstplayer;
-//     }
-//   };
-//   const pickBoardSquare = function (square) {
-//     const playerPiece = currentplayer.getPlayerPiece();
-//     const picked = currentBoard.findIndex(
-//       (element) => Object.getOwnPropertyNames(element)[0] === square
-//     );
-//     currentBoard[picked][picked] = playerPiece;
-//     const winner = checkForWinner(
-//       square,
-//       currentBoard,
-//       playerPiece,
-//       currentplayer
-//     );
-//     const tie = checkForTie(currentBoard);
-//     currentplayer = switchPlayers(firstplayer, otherplayer, currentplayer);
-//     return displayCurrentBoard.updateDisplay(winner, tie, currentBoard);
-//   };
-//   console.log(currentBoard);
-//   return { currentBoard, pickBoardSquare, restartgame };
-// })();
-
 const getSelectedSquare = function (event) {
-  let playerNames = getPlayers.selectedNames();
+  const playerNames = getPlayers.selectedNames();
   if (playerNames[0] === undefined || playerNames[1] === undefined) {
     alert("Please pick your names before playing.");
     return "please pick your names first";
@@ -195,15 +163,14 @@ const getSelectedSquare = function (event) {
   starttext.classList.add("hide");
   gameboardAIfirstplayer.pickBoardSquare(squareID);
   const currentBoard = gameboardAIfirstplayer.currentBoard;
-  //console.log(currentBoard);
 };
 
-const gameStart = (function () {
+const gameStart = function () {
   const squares = document.querySelectorAll(".square p");
   squares.forEach(function (square) {
     square.addEventListener("click", getSelectedSquare);
   });
-})();
+};
 
 const displayCurrentBoard = (function () {
   const divs = document.querySelectorAll(".square p");
@@ -218,7 +185,7 @@ const displayCurrentBoard = (function () {
       divs.forEach(function (square) {
         square.removeEventListener("click", getSelectedSquare);
       });
-      let playersNames = playeridentities.selectedNames();
+      let playersNames = getPlayers.selectedNames();
       if (winner === "firstplayer") {
         winnerPara.textContent = playersNames[0] + " is the winner!";
       } else {
@@ -234,7 +201,19 @@ const displayCurrentBoard = (function () {
   return { updateDisplay };
 })();
 
-const firstplayerAIfunc = function (winner, tie, currentBoard) {
+const playerAIfunc = function (playerinuse, winner, tie, currentBoard) {
+  let playerpiece;
+  let currentplayer;
+  if (playerinuse === undefined) {
+    playerpiece = "x";
+    currentplayer = "";
+  } else {
+    playerpiece = playerinuse.getPlayerPiece();
+    currentplayer = playerinuse;
+  }
+  if (winner != undefined) {
+    return;
+  }
   let availableSquares = [];
   currentBoard.forEach(function (obj) {
     if (Object.values(obj)[0] === " ") {
@@ -246,17 +225,59 @@ const firstplayerAIfunc = function (winner, tie, currentBoard) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1) + min);
   };
+  if (playerinuse !== undefined) {
+    minimax(currentplayer, currentBoard, availableSquares);
+  }
   const indexSelected = getRandomIntInclusive(0, availableSquares.length - 1);
-  //  console.log("available squares");
-
   const squareSelected = Object.getOwnPropertyNames(
     availableSquares[indexSelected]
   );
-  console.log(squareSelected[0]);
-  currentBoard[squareSelected[0]][squareSelected[0]] = "x";
-  //  console.log(currentBoard);
-  checkForWinner(squareSelected[0], currentBoard, "x", firstplayer);
+
+  currentBoard[squareSelected[0]][squareSelected[0]] = playerpiece;
+  winner = checkForWinner(
+    squareSelected[0],
+    currentBoard,
+    playerpiece,
+    currentplayer
+  );
+  console.log(winner);
+  if (winner == undefined) {
+    tie = checkForTie(currentBoard);
+  }
   return displayCurrentBoard.updateDisplay(winner, tie, currentBoard);
+};
+
+const minimax = function (currentplayer, currentBoard, availableSquares) {
+  const playerPiece = currentplayer.getPlayerPiece();
+  const winningArray = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  let boardValues = [];
+  currentBoard.forEach(function (obj) {
+    boardValues.push(Object.values(obj).toString());
+  });
+  let matchIndex = [];
+  boardValues.forEach(function (piece, index) {
+    if (piece === playerPiece) {
+      matchIndex.push(index);
+    }
+  });
+  let winningArraymatch = [];
+  matchIndex.forEach(function (match) {
+    winningArray.forEach(function (miniarray) {
+      if (miniarray.includes(match)) {
+        winningArraymatch.push(miniarray);
+      }
+    });
+  });
+  console.log(winningArraymatch);
 };
 
 const checkForTie = function (currentBoard) {
@@ -317,7 +338,7 @@ const checkForWinner = function (
     ).length;
 
     if (numberPieces === 3) {
-      let playerNames = playeridentities.selectedNames();
+      let playerNames = getPlayers.selectedNames();
       let playerNameWinner;
       winner = currentplayer.getName();
       if (winner === "firstplayer") {
@@ -325,7 +346,6 @@ const checkForWinner = function (
       } else {
         playerNameWinner = playerNames[1];
       }
-      //console.log("we have a winner: " + playerNameWinner);
     }
   }
   return winner;
@@ -333,11 +353,7 @@ const checkForWinner = function (
 
 const restartgameListener = (function () {
   const restartbuttonB = document.getElementById("restartbutton");
-  // const functionRestart = gameboard.restartgame();
   restartbuttonB.addEventListener("click", function () {
     gameboardAIfirstplayer.restartgame();
   });
 })();
-
-//check who is playing and run different functions. leave current functions as they are
-// dont let second player play while firstplayer hasnt played or decreased timeout on first play
