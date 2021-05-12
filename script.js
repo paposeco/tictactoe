@@ -4,6 +4,98 @@ const player = function (name, playerMark) {
   return { getName, getPlayerMark };
 };
 
+const gameboard = (function () {
+  let currentBoard = [
+    { 0: " " },
+    { 1: " " },
+    { 2: " " },
+    { 3: " " },
+    { 4: " " },
+    { 5: " " },
+    { 6: " " },
+    { 7: " " },
+    { 8: " " },
+  ];
+
+  const firstplayer = player("firstplayer", "x");
+  const otherplayer = player("otherplayer", "0");
+  let currentplayer = firstplayer;
+  let playerNames;
+  const restartgame = function () {
+    currentBoard = [
+      { 0: " " },
+      { 1: " " },
+      { 2: " " },
+      { 3: " " },
+      { 4: " " },
+      { 5: " " },
+      { 6: " " },
+      { 7: " " },
+      { 8: " " },
+    ];
+    currentplayer = firstplayer;
+    if (playersNames[0] === "firstplayerAI") {
+      setTimeout(
+        playerAIfunc.bind(
+          null,
+          firstplayer,
+          undefined,
+          undefined,
+          currentBoard
+        ),
+        300
+      );
+    }
+    displayCurrentBoard.updateDisplay(undefined, undefined, currentBoard);
+  };
+  const switchPlayers = function (firstplayer, otherplayer, currentPlayer) {
+    if (currentPlayer === firstplayer) {
+      return otherplayer;
+    } else {
+      return firstplayer;
+    }
+  };
+  const pickBoardSquare = function (square) {
+    playersNames = getPlayers.selectedNames();
+    if (playersNames[1] === "secondplayerAI") {
+      currentplayer = firstplayer;
+    }
+    if (playersNames[0] === "firstplayerAI") {
+      currentplayer = otherplayer;
+    }
+    const playerMark = currentplayer.getPlayerMark();
+    const picked = currentBoard.findIndex(
+      (element) => Object.getOwnPropertyNames(element)[0] === square
+    );
+    currentBoard[picked][picked] = playerMark;
+    const winner = checkForWinner(
+      square,
+      currentBoard,
+      playerMark,
+      currentplayer
+    );
+    const tie = checkForTie(currentBoard, winner);
+    displayCurrentBoard.updateDisplay(winner, tie, currentBoard);
+    // after a play by a human, calls the AI player function if one is being used
+    if (playersNames[0] === "firstplayerAI") {
+      setTimeout(
+        playerAIfunc.bind(null, firstplayer, winner, tie, currentBoard),
+        1000
+      );
+    }
+    if (playersNames[1] === "secondplayerAI") {
+      setTimeout(
+        playerAIfunc.bind(null, otherplayer, winner, tie, currentBoard),
+        1000
+      );
+    }
+    currentplayer = switchPlayers(firstplayer, otherplayer, currentplayer);
+  };
+
+  return { currentBoard, pickBoardSquare, restartgame };
+})();
+
+// saves players names, and if the first player is AI, runs the AI player function
 const getPlayers = (function () {
   const formAI = document.getElementById("playersinfoAI");
   let output = [];
@@ -11,6 +103,11 @@ const getPlayers = (function () {
   let otherplayerName;
   formAI.addEventListener("submit", function (e) {
     e.preventDefault();
+    output = [];
+    firstplayerName = undefined;
+    otherplayerName = undefined;
+    // nao esta a funcionar o restart
+    gameboard.restartgame();
     let data = new FormData(formAI);
     for (const entry of data) {
       output.push(entry[1]);
@@ -59,102 +156,8 @@ const getPlayers = (function () {
   return { selectedNames };
 })();
 
-const gameboard = (function () {
-  let currentBoard = [
-    { 0: " " },
-    { 1: " " },
-    { 2: " " },
-    { 3: " " },
-    { 4: " " },
-    { 5: " " },
-    { 6: " " },
-    { 7: " " },
-    { 8: " " },
-  ];
-
-  const firstplayer = player("firstplayer", "x");
-  const otherplayer = player("otherplayer", "0");
-  let currentplayer = firstplayer;
-  let playerNames;
-  const restartgame = function () {
-    currentBoard = [
-      { 0: " " },
-      { 1: " " },
-      { 2: " " },
-      { 3: " " },
-      { 4: " " },
-      { 5: " " },
-      { 6: " " },
-      { 7: " " },
-      { 8: " " },
-    ];
-    if (playersNames[0] === "firstplayerAI") {
-      setTimeout(
-        playerAIfunc.bind(
-          null,
-          firstplayer,
-          undefined,
-          undefined,
-          currentBoard
-        ),
-        300
-      );
-    }
-    displayCurrentBoard.updateDisplay(undefined, undefined, currentBoard);
-  };
-  const switchPlayers = function (firstplayer, otherplayer, currentPlayer) {
-    if (currentPlayer === firstplayer) {
-      return otherplayer;
-    } else {
-      return firstplayer;
-    }
-  };
-  const pickBoardSquare = function (square) {
-    playersNames = getPlayers.selectedNames();
-    if (playersNames[1] === "secondplayerAI") {
-      currentplayer = firstplayer;
-    }
-    if (playersNames[0] === "firstplayerAI") {
-      currentplayer = otherplayer;
-    }
-    const playerMark = currentplayer.getPlayerMark();
-    const picked = currentBoard.findIndex(
-      (element) => Object.getOwnPropertyNames(element)[0] === square
-    );
-    currentBoard[picked][picked] = playerMark;
-    const winner = checkForWinner(
-      square,
-      currentBoard,
-      playerMark,
-      currentplayer
-    );
-    const tie = checkForTie(currentBoard);
-    displayCurrentBoard.updateDisplay(winner, tie, currentBoard);
-    if (playersNames[0] === "firstplayerAI") {
-      setTimeout(
-        playerAIfunc.bind(null, firstplayer, winner, tie, currentBoard),
-        1000
-      );
-    }
-    if (playersNames[1] === "secondplayerAI") {
-      setTimeout(
-        playerAIfunc.bind(null, otherplayer, winner, tie, currentBoard),
-        1000
-      );
-    }
-    currentplayer = switchPlayers(firstplayer, otherplayer, currentplayer);
-  };
-
-  return { currentBoard, pickBoardSquare, restartgame };
-})();
-
+// handles events for humans
 const getSelectedSquare = function (event) {
-  const playerNames = getPlayers.selectedNames();
-  if (playerNames[0] === undefined || playerNames[1] === undefined) {
-    alert("Please pick your names before playing.");
-    return "please pick your names first";
-  }
-
   const squareID = event.target.getAttribute("id");
   if (event.target.textContent != " ") {
     return;
@@ -201,16 +204,7 @@ const displayCurrentBoard = (function () {
   return { updateDisplay };
 })();
 
-const playerAIfunc = function (playerinuse, winner, tie, currentBoard) {
-  let playermark;
-  let currentplayer;
-  if (playerinuse === undefined) {
-    playermark = "x";
-    currentplayer = "";
-  } else {
-    playermark = playerinuse.getPlayerMark();
-    currentplayer = playerinuse;
-  }
+const playerAIfunc = function (AIplayer, winner, tie, currentBoard) {
   if (winner != undefined) {
     return;
   }
@@ -220,26 +214,37 @@ const playerAIfunc = function (playerinuse, winner, tie, currentBoard) {
       availableSquares.push(obj);
     }
   });
-  const getRandomIntInclusive = function (min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  };
+
+  let playermark;
+  let currentplayer;
   let bestIndex;
-  if (playerinuse !== undefined) {
-    bestIndex = minimax(currentplayer, currentBoard, availableSquares);
-  }
   let squareSelected;
   let indexSelected;
+
+  // when the game first loads, player is undefined
+  if (AIplayer === undefined) {
+    playermark = "x";
+    currentplayer = "";
+  } else {
+    // looks for a win or, if there isn't one, if the other player will win on the next round
+    playermark = AIplayer.getPlayerMark();
+    currentplayer = AIplayer;
+    bestIndex = lookForAWinningLine(
+      currentplayer,
+      currentBoard,
+      availableSquares
+    );
+  }
   if (bestIndex !== undefined) {
     squareSelected = [bestIndex];
   } else {
+    //if there isn't a win for either player, picks a square randomly
     indexSelected = getRandomIntInclusive(0, availableSquares.length - 1);
     squareSelected = Object.getOwnPropertyNames(
       availableSquares[indexSelected]
     );
   }
-
+  // updates board and check if there's a winner or a tie
   currentBoard[squareSelected[0]][squareSelected[0]] = playermark;
   winner = checkForWinner(
     squareSelected[0],
@@ -247,13 +252,24 @@ const playerAIfunc = function (playerinuse, winner, tie, currentBoard) {
     playermark,
     currentplayer
   );
-  if (winner == undefined) {
-    tie = checkForTie(currentBoard);
+  if (winner === undefined) {
+    tie = checkForTie(currentBoard, winner);
   }
+  // updates page
   return displayCurrentBoard.updateDisplay(winner, tie, currentBoard);
 };
 
-const minimax = function (currentplayer, currentBoard, availableSquares) {
+const getRandomIntInclusive = function (min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1) + min);
+};
+
+const lookForAWinningLine = function (
+  currentplayer,
+  currentBoard,
+  availableSquares
+) {
   const playerMark = currentplayer.getPlayerMark();
   let otherplayerMark;
   if (currentplayer.getName() === "firstplayer") {
@@ -272,7 +288,7 @@ const minimax = function (currentplayer, currentBoard, availableSquares) {
     [0, 4, 8],
     [2, 4, 6],
   ];
-  let indexObjFinal;
+  let selectedSquare;
   for (i = 0; i < availableSquares.length; i++) {
     let indexObj = Number(Object.keys(availableSquares[i]));
     winningArray.forEach(function (miniarray) {
@@ -292,7 +308,7 @@ const minimax = function (currentplayer, currentBoard, availableSquares) {
             (currentValue) => currentValue === playerMark
           )
         ) {
-          indexObjFinal = indexObj;
+          selectedSquare = indexObj;
           return;
         }
 
@@ -302,16 +318,20 @@ const minimax = function (currentplayer, currentBoard, availableSquares) {
             (currentValue) => currentValue === otherplayerMark
           )
         ) {
-          indexObjFinal = indexObj;
+          selectedSquare = indexObj;
           return;
         }
       }
     });
   }
-  return indexObjFinal;
+  return selectedSquare;
 };
 
-const checkForTie = function (currentBoard) {
+const checkForTie = function (currentBoard, winner) {
+  if (winner !== undefined) {
+    console.log(winner);
+    return;
+  }
   let objectValues = [];
   currentBoard.forEach(function (obj) {
     objectValues.push(Object.values(obj));
@@ -387,3 +407,5 @@ const restartgameListener = (function () {
     gameboard.restartgame();
   });
 })();
+
+//restart nao esta bem para humanos
