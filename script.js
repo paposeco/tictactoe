@@ -1,7 +1,7 @@
-const player = function (name, playerPiece) {
+const player = function (name, playerMark) {
   const getName = () => name;
-  const getPlayerPiece = () => playerPiece;
-  return { getName, getPlayerPiece };
+  const getPlayerMark = () => playerMark;
+  return { getName, getPlayerMark };
 };
 
 const getPlayers = (function () {
@@ -16,13 +16,13 @@ const getPlayers = (function () {
       output.push(entry[1]);
     }
     if (output[0] === "firstplayer") {
-      firstplayerName = window.prompt("Name of Firstplayer:");
+      firstplayerName = window.prompt("Name of first player: ");
       gameStart();
     } else {
       firstplayerName = output[0];
     }
     if (output[1] === "secondplayer") {
-      otherplayerName = window.prompt("Name of Secondplayer:");
+      otherplayerName = window.prompt("Name of second player: ");
     } else {
       otherplayerName = output[1];
     }
@@ -41,7 +41,7 @@ const getPlayers = (function () {
           undefined,
           undefined,
           undefined,
-          gameboardAIfirstplayer.currentBoard
+          gameboard.currentBoard
         ),
         300
       );
@@ -59,24 +59,24 @@ const getPlayers = (function () {
   return { selectedNames };
 })();
 
-const gameboardAIfirstplayer = (function () {
+const gameboard = (function () {
   let currentBoard = [
-    { 0: "0" },
+    { 0: " " },
     { 1: " " },
-    { 2: "x" },
-    { 3: "x" },
+    { 2: " " },
+    { 3: " " },
     { 4: " " },
     { 5: " " },
-    { 6: "x" },
-    { 7: "0" },
-    { 8: "0" },
+    { 6: " " },
+    { 7: " " },
+    { 8: " " },
   ];
+
   const firstplayer = player("firstplayer", "x");
   const otherplayer = player("otherplayer", "0");
   let currentplayer = firstplayer;
   let playerNames;
   const restartgame = function () {
-    //currentplayer = firstplayer;
     currentBoard = [
       { 0: " " },
       { 1: " " },
@@ -117,15 +117,15 @@ const gameboardAIfirstplayer = (function () {
     if (playersNames[0] === "firstplayerAI") {
       currentplayer = otherplayer;
     }
-    const playerPiece = currentplayer.getPlayerPiece();
+    const playerMark = currentplayer.getPlayerMark();
     const picked = currentBoard.findIndex(
       (element) => Object.getOwnPropertyNames(element)[0] === square
     );
-    currentBoard[picked][picked] = playerPiece;
+    currentBoard[picked][picked] = playerMark;
     const winner = checkForWinner(
       square,
       currentBoard,
-      playerPiece,
+      playerMark,
       currentplayer
     );
     const tie = checkForTie(currentBoard);
@@ -161,8 +161,8 @@ const getSelectedSquare = function (event) {
   }
   const starttext = document.getElementById("gameReady");
   starttext.classList.add("hide");
-  gameboardAIfirstplayer.pickBoardSquare(squareID);
-  const currentBoard = gameboardAIfirstplayer.currentBoard;
+  gameboard.pickBoardSquare(squareID);
+  const currentBoard = gameboard.currentBoard;
 };
 
 const gameStart = function () {
@@ -175,7 +175,7 @@ const gameStart = function () {
 const displayCurrentBoard = (function () {
   const divs = document.querySelectorAll(".square p");
   const divsarray = Array.from(divs, (div) => div);
-  const currentBoard = gameboardAIfirstplayer.currentBoard;
+  const currentBoard = gameboard.currentBoard;
   const winnerPara = document.getElementById("winner");
   const updateDisplay = function (winner, tie, currentBoard) {
     for (i = 0; i < divsarray.length; i++) {
@@ -202,13 +202,13 @@ const displayCurrentBoard = (function () {
 })();
 
 const playerAIfunc = function (playerinuse, winner, tie, currentBoard) {
-  let playerpiece;
+  let playermark;
   let currentplayer;
   if (playerinuse === undefined) {
-    playerpiece = "x";
+    playermark = "x";
     currentplayer = "";
   } else {
-    playerpiece = playerinuse.getPlayerPiece();
+    playermark = playerinuse.getPlayerMark();
     currentplayer = playerinuse;
   }
   if (winner != undefined) {
@@ -225,22 +225,28 @@ const playerAIfunc = function (playerinuse, winner, tie, currentBoard) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1) + min);
   };
+  let bestIndex;
   if (playerinuse !== undefined) {
-    minimax(currentplayer, currentBoard, availableSquares);
+    bestIndex = minimax(currentplayer, currentBoard, availableSquares);
   }
-  const indexSelected = getRandomIntInclusive(0, availableSquares.length - 1);
-  const squareSelected = Object.getOwnPropertyNames(
-    availableSquares[indexSelected]
-  );
+  let squareSelected;
+  let indexSelected;
+  if (bestIndex !== undefined) {
+    squareSelected = [bestIndex];
+  } else {
+    indexSelected = getRandomIntInclusive(0, availableSquares.length - 1);
+    squareSelected = Object.getOwnPropertyNames(
+      availableSquares[indexSelected]
+    );
+  }
 
-  currentBoard[squareSelected[0]][squareSelected[0]] = playerpiece;
+  currentBoard[squareSelected[0]][squareSelected[0]] = playermark;
   winner = checkForWinner(
     squareSelected[0],
     currentBoard,
-    playerpiece,
+    playermark,
     currentplayer
   );
-  console.log(winner);
   if (winner == undefined) {
     tie = checkForTie(currentBoard);
   }
@@ -248,7 +254,14 @@ const playerAIfunc = function (playerinuse, winner, tie, currentBoard) {
 };
 
 const minimax = function (currentplayer, currentBoard, availableSquares) {
-  const playerPiece = currentplayer.getPlayerPiece();
+  const playerMark = currentplayer.getPlayerMark();
+  let otherplayerMark;
+  if (currentplayer.getName() === "firstplayer") {
+    otherplayerMark = "0";
+  } else {
+    otherplayerMark = "x";
+  }
+  console.log(otherplayerMark);
   const winningArray = [
     [0, 1, 2],
     [3, 4, 5],
@@ -259,25 +272,43 @@ const minimax = function (currentplayer, currentBoard, availableSquares) {
     [0, 4, 8],
     [2, 4, 6],
   ];
-  let boardValues = [];
-  currentBoard.forEach(function (obj) {
-    boardValues.push(Object.values(obj).toString());
-  });
-  let matchIndex = [];
-  boardValues.forEach(function (piece, index) {
-    if (piece === playerPiece) {
-      matchIndex.push(index);
-    }
-  });
-  let winningArraymatch = [];
-  matchIndex.forEach(function (match) {
+  let indexObjFinal;
+  for (i = 0; i < availableSquares.length; i++) {
+    let indexObj = Number(Object.keys(availableSquares[i]));
     winningArray.forEach(function (miniarray) {
-      if (miniarray.includes(match)) {
-        winningArraymatch.push(miniarray);
+      if (miniarray.includes(indexObj)) {
+        let boardValuesForMiniArray = [];
+        for (j = 0; j < miniarray.length; j++) {
+          boardValuesForMiniArray.push(
+            Object.values(currentBoard[miniarray[j]]).toString()
+          );
+        }
+
+        // check for 3 in line for either player
+        let indexInMiniArray = miniarray.indexOf(indexObj);
+        boardValuesForMiniArray[indexInMiniArray] = playerMark;
+        if (
+          boardValuesForMiniArray.every(
+            (currentValue) => currentValue === playerMark
+          )
+        ) {
+          indexObjFinal = indexObj;
+          return;
+        }
+
+        boardValuesForMiniArray[indexInMiniArray] = otherplayerMark;
+        if (
+          boardValuesForMiniArray.every(
+            (currentValue) => currentValue === otherplayerMark
+          )
+        ) {
+          indexObjFinal = indexObj;
+          return;
+        }
       }
     });
-  });
-  console.log(winningArraymatch);
+  }
+  return indexObjFinal;
 };
 
 const checkForTie = function (currentBoard) {
@@ -298,7 +329,7 @@ const checkForTie = function (currentBoard) {
 const checkForWinner = function (
   currentSquareID,
   currentBoard,
-  piece,
+  mark,
   currentplayer
 ) {
   const winningArray = [
@@ -333,11 +364,10 @@ const checkForWinner = function (
       objectvaluesarray[1][0],
       objectvaluesarray[2][0],
     ];
-    let numberPieces = objectvalueOneArray.filter(
-      (element) => element === piece
-    ).length;
+    let numberMarks = objectvalueOneArray.filter((element) => element === mark)
+      .length;
 
-    if (numberPieces === 3) {
+    if (numberMarks === 3) {
       let playerNames = getPlayers.selectedNames();
       let playerNameWinner;
       winner = currentplayer.getName();
@@ -354,6 +384,6 @@ const checkForWinner = function (
 const restartgameListener = (function () {
   const restartbuttonB = document.getElementById("restartbutton");
   restartbuttonB.addEventListener("click", function () {
-    gameboardAIfirstplayer.restartgame();
+    gameboard.restartgame();
   });
 })();
