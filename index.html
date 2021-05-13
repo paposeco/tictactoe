@@ -4,45 +4,66 @@
     <meta charset="utf-8" />
     <title>Tic Tac Toe</title>
     <link rel="stylesheet" href="styles/stylesheet.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://fonts.googleapis.com/css?family=Yellowtail"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://fonts.googleapis.com/css?family=Pinyon+Script"
+    />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
   </head>
   <body>
     <div id="players">
       <form id="playersinfoAI">
-        <div>
-          <input
-            type="radio"
-            id="firstplayer"
-            value="firstplayer"
-            name="firstplayers"
-          />
-          <label for="firstplayer">First player</label>
-          <input
-            type="radio"
-            id="firstplayerAI"
-            value="firstplayerAI"
-            name="firstplayers"
-          />
-          <label for="firstplayerAI">First player AI</label>
+        <div class="playersDiv">
+          <p>Select Player 1:</p>
+          <div class="labelInput">
+            <input
+              type="radio"
+              id="firstplayer"
+              value="firstplayer"
+              name="firstplayers"
+            />
+            <label for="firstplayer">Human</label>
+          </div>
+          <div class="labelInput">
+            <input
+              type="radio"
+              id="firstplayerAI"
+              value="firstplayerAI"
+              name="firstplayers"
+            />
+            <label for="firstplayerAI">Computer</label>
+          </div>
         </div>
-        <div>
-          <input
-            type="radio"
-            id="secondplayer"
-            value="secondplayer"
-            name="secondplayers"
-          />
-          <label for="secondplayer">Second player</label>
-          <input
-            type="radio"
-            id="secondplayerAI"
-            value="secondplayerAI"
-            name="secondplayers"
-          />
-          <label for="secondplayerAI">Second player AI</label>
+        <div class="playersDiv">
+          <p>Select Player 2:</p>
+          <div class="labelInput">
+            <input
+              type="radio"
+              id="secondplayer"
+              value="secondplayer"
+              name="secondplayers"
+            />
+            <label for="secondplayer">Human</label>
+          </div>
+          <div class="labelInput">
+            <input
+              type="radio"
+              id="secondplayerAI"
+              value="secondplayerAI"
+              name="secondplayers"
+            />
+            <label for="secondplayerAI">Computer</label>
+          </div>
         </div>
+
         <div>
-          <button type="submit" id="playersSelected">Submit</button>
+          <button type="submit" id="playersSelected">Start!</button>
         </div>
       </form>
     </div>
@@ -53,26 +74,40 @@
       <div id="gameReady" class="hide">
         <p style="text-align: center">Game is ready!</p>
         <p>
-          First player picks a square. Second player picks next. If you're
-          playing against the computer, it will play automatically.
+          Player 1 picks a square. Player 2 picks next. If you are playing
+          against the computer, it will play automatically.
         </p>
         <p>Continue until one player fills a line with 3 crosses or circles.</p>
       </div>
     </div>
+    <canvas width="360" height="360"></canvas>
+
     <div id="gameboard">
-      <div class="square"><p id="0"></p></div>
+      <div class="square">
+        <p id="0"></p>
+      </div>
       <div class="square"><p id="1"></p></div>
-      <div class="square"><p id="2"></p></div>
+      <div class="square">
+        <p id="2"></p>
+      </div>
       <div class="square"><p id="3"></p></div>
-      <div class="square"><p id="4"></p></div>
+      <div class="square">
+        <p id="4"></p>
+      </div>
       <div class="square"><p id="5"></p></div>
-      <div class="square"><p id="6"></p></div>
+      <div class="square">
+        <p id="6"></p>
+      </div>
       <div class="square"><p id="7"></p></div>
-      <div class="square"><p id="8"></p></div>
+      <div class="square">
+        <p id="8"></p>
+      </div>
     </div>
+
     <div id="restart">
       <button id="restartbutton" type="button">Restart Game</button>
     </div>
+
     <script src="script.js"></script>
   </body>
 </html>

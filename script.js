@@ -70,8 +70,8 @@ const gameboard = (function () {
     { 8: " " },
   ];
 
-  const firstplayer = player("firstplayer", "x");
-  const otherplayer = player("otherplayer", "0");
+  const firstplayer = player("firstplayer", "×");
+  const otherplayer = player("otherplayer", "o");
   let currentplayer = firstplayer;
   let playerNames;
   let winner;
@@ -107,6 +107,7 @@ const gameboard = (function () {
     } else {
       gameStart();
     }
+    drawOnCanvas.clearCanvas();
     displayCurrentBoard.updateDisplay(undefined, undefined, currentBoard);
   };
   // this function is used when the user clicks the submit button for a second time to change players
@@ -125,6 +126,7 @@ const gameboard = (function () {
       { 8: " " },
     ];
     currentplayer = firstplayer;
+    drawOnCanvas.clearCanvas();
     displayCurrentBoard.updateDisplay(undefined, undefined, currentBoard);
     return currentBoard;
   };
@@ -155,13 +157,13 @@ const gameboard = (function () {
     if (playersNames[0] === "firstplayerAI") {
       setTimeout(
         playerAIfunc.bind(null, firstplayer, winner, tie, currentBoard),
-        1000
+        300
       );
     }
     if (playersNames[1] === "secondplayerAI") {
       setTimeout(
         playerAIfunc.bind(null, otherplayer, winner, tie, currentBoard),
-        1000
+        300
       );
     }
     currentplayer = switchPlayers(firstplayer, otherplayer, currentplayer);
@@ -247,7 +249,7 @@ const playerAIfunc = function (AIplayer, winner, tie, currentBoard) {
 
   // when the game first loads, player is undefined
   if (AIplayer === undefined) {
-    playermark = "x";
+    playermark = "×";
     currentplayer = "";
   } else {
     // looks for a win or, if there isn't one, if the other player will win on the next round
@@ -297,9 +299,9 @@ const lookForAWinningLine = function (
   const playerMark = currentplayer.getPlayerMark();
   let otherplayerMark;
   if (currentplayer.getName() === "firstplayer") {
-    otherplayerMark = "0";
+    otherplayerMark = "o";
   } else {
-    otherplayerMark = "x";
+    otherplayerMark = "×";
   }
   const winningArray = [
     [0, 1, 2],
@@ -312,14 +314,16 @@ const lookForAWinningLine = function (
     [2, 4, 6],
   ];
   let selectedSquare;
+  //checks for 3 in line for currentplayer
   for (i = 0; i < availableSquares.length; i++) {
     let indexObj = Number(Object.keys(availableSquares[i]));
-    winningArray.forEach(function (miniarray) {
+    for (j = 0; j < winningArray.length; j++) {
+      let miniarray = winningArray[j];
       if (miniarray.includes(indexObj)) {
         let boardValuesForMiniArray = [];
-        for (j = 0; j < miniarray.length; j++) {
+        for (k = 0; k < miniarray.length; k++) {
           boardValuesForMiniArray.push(
-            Object.values(currentBoard[miniarray[j]]).toString()
+            Object.values(currentBoard[miniarray[k]]).toString()
           );
         }
 
@@ -332,9 +336,28 @@ const lookForAWinningLine = function (
           )
         ) {
           selectedSquare = indexObj;
-          return;
+          break;
         }
+      }
+    }
+    if (selectedSquare !== undefined) {
+      return selectedSquare;
+    }
+  }
 
+  // checks for 3 in line for otherplayer
+  for (i = 0; i < availableSquares.length; i++) {
+    let indexObj = Number(Object.keys(availableSquares[i]));
+    for (l = 0; l < winningArray.length; l++) {
+      let miniarray = winningArray[l];
+      if (miniarray.includes(indexObj)) {
+        let boardValuesForMiniArray = [];
+        for (m = 0; m < miniarray.length; m++) {
+          boardValuesForMiniArray.push(
+            Object.values(currentBoard[miniarray[m]]).toString()
+          );
+        }
+        let indexInMiniArray = miniarray.indexOf(indexObj);
         boardValuesForMiniArray[indexInMiniArray] = otherplayerMark;
         if (
           boardValuesForMiniArray.every(
@@ -342,12 +365,14 @@ const lookForAWinningLine = function (
           )
         ) {
           selectedSquare = indexObj;
-          return;
+          break;
         }
       }
-    });
+    }
+    if (selectedSquare !== undefined) {
+      return selectedSquare;
+    }
   }
-  return selectedSquare;
 };
 
 const checkForTie = function (currentBoard, winner) {
@@ -418,6 +443,7 @@ const checkForWinner = function (
       } else {
         playerNameWinner = playerNames[1];
       }
+      drawOnCanvas.drawLine(currentArray);
     }
   }
   return winner;
@@ -429,3 +455,58 @@ const restartgameListener = (function () {
     gameboard.restartgame();
   });
 })();
+
+const drawOnCanvas = (function () {
+  const canvas = document.querySelector("canvas");
+  canvas.style.zIndex = "1";
+  const ctx = canvas.getContext("2d");
+  const drawLine = function (array) {
+    ctx.beginPath();
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 10;
+    const startingPoint = array[0];
+    switch (startingPoint) {
+      case 0:
+        if (array[1] === 1) {
+          ctx.moveTo(15, 60);
+          ctx.lineTo(345, 60);
+        } else if (array[1] === 3) {
+          ctx.moveTo(60, 15);
+          ctx.lineTo(60, 345);
+        } else {
+          ctx.moveTo(15, 15);
+          ctx.lineTo(345, 345);
+        }
+        break;
+      case 3:
+        ctx.moveTo(15, 180);
+        ctx.lineTo(345, 180);
+        break;
+      case 6:
+        ctx.moveTo(15, 300);
+        ctx.lineTo(345, 300);
+        break;
+      case 1:
+        ctx.moveTo(180, 15);
+        ctx.lineTo(180, 345);
+        break;
+      case 2:
+        if (array[1] === 5) {
+          ctx.moveTo(300, 15);
+          ctx.lineTo(300, 345);
+        } else {
+          ctx.moveTo(345, 15);
+          ctx.lineTo(15, 345);
+        }
+        break;
+    }
+    ctx.stroke();
+  };
+  const clearCanvas = function () {
+    canvas.style.zIndex = "-1";
+    ctx.clearRect(0, 0, 360, 360);
+  };
+  return { drawLine, clearCanvas };
+})();
+
+// esta a dar preferencia a noa me deixar ganhar em vez de ganha rele
