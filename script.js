@@ -41,9 +41,9 @@ const getPlayers = (function () {
     if (firstplayerName === "firstplayerAI") {
       setTimeout(
         playerAIfunc.bind(null, undefined, undefined, undefined, freshboard),
-        300
+        650
       );
-      setTimeout(gameStart, 350);
+      setTimeout(gameStart, 700);
     }
     if (otherplayerName === "secondplayerAI") {
       gameStart();
@@ -191,17 +191,58 @@ const gameStart = function () {
   });
 };
 
+// const displayCurrentBoard = (function () {
+//   const divs = document.querySelectorAll(".square p");
+//   const divsarray = Array.from(divs, (div) => div);
+//   const currentBoard = gameboard.currentBoard;
+//   const winnerPara = document.getElementById("winner");
+//   const updateDisplay = function (winner, tie, currentBoard) {
+//     for (i = 0; i < divsarray.length; i++) {
+//       divsarray[i].textContent = currentBoard[i][i];
+//     }
+//     if (winner === undefined && tie === undefined) {
+//       winnerPara.textContent = "";
+//     }
+//     if (winner !== undefined) {
+//       divs.forEach(function (square) {
+//         square.removeEventListener("click", getSelectedSquare);
+//       });
+//       let playersNames = getPlayers.selectedNames();
+//       if (winner === "firstplayer") {
+//         if (playersNames[0] === "firstplayerAI") {
+//           winnerPara.textContent = "Computer is the winner!";
+//         } else {
+//           winnerPara.textContent = playersNames[0] + " is the winner!";
+//         }
+//       } else {
+//         if (playersNames[1] === "secondplayerAI") {
+//           winnerPara.textContent = "Computer is the winner!";
+//         } else {
+//           winnerPara.textContent = playersNames[1] + " is the winner!";
+//         }
+//       }
+//     }
+//     if (tie === "It's a tie") {
+//       winnerPara.textContent = "It's a tie!";
+//     }
+//   };
+//   updateDisplay(undefined, undefined, currentBoard);
+//   return { updateDisplay };
+// })();
+
 const displayCurrentBoard = (function () {
   const divs = document.querySelectorAll(".square p");
   const divsarray = Array.from(divs, (div) => div);
   const currentBoard = gameboard.currentBoard;
   const winnerPara = document.getElementById("winner");
+  const gameReadyPara = document.getElementById("gameReady");
+  const gameinfopara = document.querySelectorAll(".gameinfo");
   const updateDisplay = function (winner, tie, currentBoard) {
     for (i = 0; i < divsarray.length; i++) {
       divsarray[i].textContent = currentBoard[i][i];
     }
     if (winner === undefined && tie === undefined) {
-      winnerPara.textContent = "";
+      //gameReadyPara.textContent = "";
     }
     if (winner !== undefined) {
       divs.forEach(function (square) {
@@ -209,12 +250,16 @@ const displayCurrentBoard = (function () {
       });
       let playersNames = getPlayers.selectedNames();
       if (winner === "firstplayer") {
+        gameReadyPara.classList.remove("hide");
+        gameinfopara.forEach((para) => (para.textContent = ""));
         if (playersNames[0] === "firstplayerAI") {
           winnerPara.textContent = "Computer is the winner!";
         } else {
           winnerPara.textContent = playersNames[0] + " is the winner!";
         }
       } else {
+        gameinfopara.forEach((para) => (para.textContent = ""));
+        gameReadyPara.classList.remove("hide");
         if (playersNames[1] === "secondplayerAI") {
           winnerPara.textContent = "Computer is the winner!";
         } else {
@@ -223,6 +268,8 @@ const displayCurrentBoard = (function () {
       }
     }
     if (tie === "It's a tie") {
+      gameinfopara.forEach((para) => (para.textContent = ""));
+      gameReadyPara.classList.remove("hide");
       winnerPara.textContent = "It's a tie!";
     }
   };
@@ -509,4 +556,5 @@ const drawOnCanvas = (function () {
   return { drawLine, clearCanvas };
 })();
 
-// esta a dar preferencia a noa me deixar ganhar em vez de ganha rele
+// on start tem de tirar o winner do textcontent
+// se calhar em vez de fazer hide posso so reduzir a altura do gameready

@@ -12,15 +12,22 @@
     <link
       rel="stylesheet"
       type="text/css"
-      href="https://fonts.googleapis.com/css?family=Pinyon+Script"
+      href="https://fonts.googleapis.com/css?family=Arvo"
     />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
   </head>
   <body>
+    <header>
+      <h1>Tic Tac Toe</h1>
+    </header>
     <div id="players">
+      <p>
+        Select the players and press Start!. Humans will be asked to provide a
+        name.
+      </p>
       <form id="playersinfoAI">
         <div class="playersDiv">
-          <p>Select Player 1:</p>
+          <p>Player <span class="mark"> ~ x</span></p>
           <div class="labelInput">
             <input
               type="radio"
@@ -41,7 +48,7 @@
           </div>
         </div>
         <div class="playersDiv">
-          <p>Select Player 2:</p>
+          <p>Player <span class="mark"> ~ o</span></p>
           <div class="labelInput">
             <input
               type="radio"
@@ -68,16 +75,16 @@
       </form>
     </div>
     <div id="textareadiv">
-      <div id="winnerdiv">
-        <p id="winner"></p>
-      </div>
+      <p id="winner"></p>
       <div id="gameReady" class="hide">
-        <p style="text-align: center">Game is ready!</p>
-        <p>
+        <p style="text-align: center" class="gameinfo">Game is ready!</p>
+        <p class="gameinfo">
           Player 1 picks a square. Player 2 picks next. If you are playing
           against the computer, it will play automatically.
         </p>
-        <p>Continue until one player fills a line with 3 crosses or circles.</p>
+        <p class="gameinfo">
+          Continue until one player fills a line with 3 crosses or circles.
+        </p>
       </div>
     </div>
     <canvas width="360" height="360"></canvas>
