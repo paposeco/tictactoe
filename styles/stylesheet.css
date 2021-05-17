@@ -1,4 +1,16 @@
+html {
+  background-color: #14352c;
+  color: #14352c;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
 body {
+  width: 70%;
+  height: 100vh;
+  background-color: #e8eceb;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -7,14 +19,34 @@ body {
   font-family: Arvo;
   font-size: 18px;
   gap: 10px;
+  padding: 0px;
+  margin: 0px;
 }
+
+button {
+  font-family: Arvo;
+  background-color: #14352c;
+  color: #e8eceb;
+  border: none;
+  outline: none;
+  font-weight: bold;
+  box-shadow: inset 1px 1px 1px #46685f, 1px 1px 1px #46685f;
+  font-size: 17px;
+}
+
+button:hover {
+  background-color: #46685f;
+  box-shadow: inset 1px 1px 1px #90a49f, 1px 1px 1px #46685f;
+  cursor: pointer;
+}
+
 header {
   width: 700px;
+  padding-top: 30px;
 }
 
 h1 {
   text-align: left;
-  margin: 10px 0px;
 }
 
 #gameboard {
@@ -26,9 +58,22 @@ h1 {
 }
 
 #gameboard > div {
-  border: 1px solid black;
+  /* border: 1px solid #14352c; */
   height: 120px;
   width: 120px;
+}
+
+.VB {
+  border-right: 3px solid #14352c;
+  border-bottom: 3px solid #14352c;
+}
+
+.Bt {
+  border-bottom: 3px solid #14352c;
+}
+
+.Vt {
+  border-right: 3px solid #14352c;
 }
 
 .square > p {
@@ -40,6 +85,8 @@ h1 {
   padding: 0;
   margin: 0;
   align-self: center;
+  color: #2a3e39;
+  /* color: rgb(25, 67, 56); */
 }
 .square {
   display: flex;
@@ -48,18 +95,7 @@ h1 {
   align-items: center;
 }
 
-#textareadiv {
-  /* height: 150px; */
-  width: 700px;
-}
-
-#gameReady {
-  /* height: 150px; */
-  width: 100%;
-  margin-top: -100px;
-}
-
-.hide {
+.square .hide {
   visibility: hidden;
   height: 20px;
 }
@@ -70,8 +106,12 @@ h1 {
 }
 
 #players {
-  height: 200px;
+  height: 160px;
   padding: 10px;
+}
+#players > p {
+  color: #5e7b73;
+  font-size: 17px;
 }
 
 #playersinfoAI {
@@ -81,20 +121,20 @@ h1 {
   gap: 20px;
   width: 700px;
   justify-content: space-around;
-  border: solid 1px black;
+  margin-bottom: 0px;
 }
 
 .playersDiv {
   display: flex;
   flex-direction: column;
   width: 160px;
-  /* border: 1px solid black; */
-  padding: 20px;
-  padding-bottom: 30px;
+
+  padding: 0px 20px;
 }
 
 .playersDiv > p {
   margin-top: 0px;
+  font-size: 20px;
 }
 
 .labelInput {
@@ -107,9 +147,7 @@ h1 {
 }
 
 canvas {
-  position: absolute;
-  top: 437px;
-  z-index: -1;
+  position: fixed;
 }
 
 .mark {
@@ -117,8 +155,39 @@ canvas {
   font-size: 1.2rem;
 }
 
-#winner {
-  font-size: 25px;
+#gameStatus {
+  height: 140px;
+  width: 600px;
+  margin: 0px;
+  padding: 0px;
+}
+
+#gameStatus > h3 {
   text-align: center;
-  height: 100px;
+  margin-top: 0px;
+  margin-bottom: 15px;
+}
+
+#gameStatus > p {
+  color: #5e7b73;
+  font-size: 17px;
+}
+
+#restart {
+  margin-top: 45px;
+  flex-grow: 1;
+}
+
+#restartbutton {
+  height: 50px;
+  width: 170px;
+}
+
+.markO {
+  color: #2e7b67 !important;
+}
+
+.availablesquare:hover {
+  cursor: pointer;
+  background-color: rgba(70, 104, 95, 0.3);
 }

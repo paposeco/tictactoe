@@ -74,41 +74,19 @@
         </div>
       </form>
     </div>
-    <div id="textareadiv">
-      <p id="winner"></p>
-      <div id="gameReady" class="hide">
-        <p style="text-align: center" class="gameinfo">Game is ready!</p>
-        <p class="gameinfo">
-          Player 1 picks a square. Player 2 picks next. If you are playing
-          against the computer, it will play automatically.
-        </p>
-        <p class="gameinfo">
-          Continue until one player fills a line with 3 crosses or circles.
-        </p>
-      </div>
-    </div>
-    <canvas width="360" height="360"></canvas>
+    <div id="gameStatus"></div>
 
     <div id="gameboard">
-      <div class="square">
-        <p id="0"></p>
-      </div>
-      <div class="square"><p id="1"></p></div>
-      <div class="square">
-        <p id="2"></p>
-      </div>
-      <div class="square"><p id="3"></p></div>
-      <div class="square">
-        <p id="4"></p>
-      </div>
-      <div class="square"><p id="5"></p></div>
-      <div class="square">
-        <p id="6"></p>
-      </div>
-      <div class="square"><p id="7"></p></div>
-      <div class="square">
-        <p id="8"></p>
-      </div>
+      <canvas width="360" height="360"></canvas>
+      <div class="square VB"><p id="0"></p></div>
+      <div class="square VB"><p id="1"></p></div>
+      <div class="square Bt"><p id="2"></p></div>
+      <div class="square VB"><p id="3"></p></div>
+      <div class="square VB"><p id="4"></p></div>
+      <div class="square Bt"><p id="5"></p></div>
+      <div class="square Vt"><p id="6"></p></div>
+      <div class="square Vt"><p id="7"></p></div>
+      <div class="square"><p id="8"></p></div>
     </div>
 
     <div id="restart">

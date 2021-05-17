@@ -17,14 +17,23 @@ const getPlayers = (function () {
     for (const entry of data) {
       output.push(entry[1]);
     }
+    //output[0] is firstplayer for humans and firstplayerAI for computer;
     if (output[0] === "firstplayer") {
-      firstplayerName = window.prompt("Name of first player: ");
-      gameStart();
+      firstplayerName = window.prompt("Name of first player: ", "Player X");
+      // on cancel return
+      if (firstplayerName === null) {
+        return;
+      } else {
+        gameStart();
+      }
     } else {
       firstplayerName = output[0];
     }
     if (output[1] === "secondplayer") {
-      otherplayerName = window.prompt("Name of second player: ");
+      otherplayerName = window.prompt("Name of second player: ", "Player O");
+      if (otherplayerName === null) {
+        return;
+      }
     } else {
       otherplayerName = output[1];
     }
@@ -45,12 +54,20 @@ const getPlayers = (function () {
       );
       setTimeout(gameStart, 700);
     }
-    if (otherplayerName === "secondplayerAI") {
-      gameStart();
-    }
-    const starttext = document.getElementById("gameReady");
-    starttext.classList.remove("hide");
+    const starttext = document.getElementById("gameStatus");
+    const subtitle = document.createElement("h3");
+    const para1 = document.createElement("p");
+    const para2 = document.createElement("p");
+    subtitle.textContent = "Game is ready!";
+    para1.textContent =
+      "Player 1 picks a square. Player 2 picks next. If you are playing against the computer, it will play automatically.";
+    para2.textContent =
+      "Continue until one player fills a line with 3 crosses or circles.";
+    starttext.appendChild(subtitle);
+    starttext.appendChild(para1);
+    starttext.appendChild(para2);
   });
+
   const selectedNames = function () {
     return [firstplayerName, otherplayerName];
   };
@@ -76,6 +93,7 @@ const gameboard = (function () {
   let playerNames;
   let winner;
   let tie;
+  // restarts game and maintains players
   const restartgame = function () {
     playerNames = getPlayers.selectedNames();
     winner = undefined;
@@ -92,6 +110,14 @@ const gameboard = (function () {
       { 8: " " },
     ];
     currentplayer = firstplayer;
+    // removes "O" mark class from squares where it was applied before and removes winner/tie text
+    const squaresPara = document.querySelectorAll(".markO");
+    squaresPara.forEach((square) => square.classList.remove("markO"));
+    const subtitle = document.querySelector("#gameStatus h3");
+    const starttext = document.querySelector("#gameStatus");
+    if (starttext.contains(subtitle)) {
+      starttext.removeChild(subtitle);
+    }
     if (playersNames[0] === "firstplayerAI") {
       setTimeout(
         playerAIfunc.bind(
@@ -110,7 +136,7 @@ const gameboard = (function () {
     drawOnCanvas.clearCanvas();
     displayCurrentBoard.updateDisplay(undefined, undefined, currentBoard);
   };
-  // this function is used when the user clicks the submit button for a second time to change players
+  // similar to restart function but resets players too; function runs after clicking the start button for a second time
   const resetPlayers = function () {
     winner = undefined;
     tie = undefined;
@@ -125,6 +151,13 @@ const gameboard = (function () {
       { 7: " " },
       { 8: " " },
     ];
+    const squaresPara = document.querySelectorAll(".markO");
+    squaresPara.forEach((square) => square.classList.remove("markO"));
+    const subtitle = document.querySelector("#gameStatus h3");
+    const starttext = document.querySelector("#gameStatus");
+    if (starttext.contains(subtitle)) {
+      starttext.removeChild(subtitle);
+    }
     currentplayer = firstplayer;
     drawOnCanvas.clearCanvas();
     displayCurrentBoard.updateDisplay(undefined, undefined, currentBoard);
@@ -139,16 +172,23 @@ const gameboard = (function () {
   };
   const pickBoardSquare = function (square) {
     playersNames = getPlayers.selectedNames();
+    // switches players for AI; humans are switched with the switchPlayers function
     if (playersNames[1] === "secondplayerAI") {
       currentplayer = firstplayer;
     }
     if (playersNames[0] === "firstplayerAI") {
       currentplayer = otherplayer;
     }
+    const currentSquare = document.getElementById(square);
     const playerMark = currentplayer.getPlayerMark();
+    // colors mark "O" differently than "X"
+    if (playerMark === "o") {
+      currentSquare.classList.add("markO");
+    }
     const picked = currentBoard.findIndex(
       (element) => Object.getOwnPropertyNames(element)[0] === square
     );
+    // updates currentBoard objects, checks for winner or tie and updates display
     currentBoard[picked][picked] = playerMark;
     winner = checkForWinner(square, currentBoard, playerMark, currentplayer);
     tie = checkForTie(currentBoard, winner);
@@ -161,6 +201,7 @@ const gameboard = (function () {
       );
     }
     if (playersNames[1] === "secondplayerAI") {
+      console.log(currentBoard);
       setTimeout(
         playerAIfunc.bind(null, otherplayer, winner, tie, currentBoard),
         300
@@ -172,16 +213,24 @@ const gameboard = (function () {
   return { currentBoard, pickBoardSquare, restartgame, resetPlayers };
 })();
 
-// handles events for humans
+// handles click events on gameboard for humans
 const getSelectedSquare = function (event) {
   const squareID = event.target.getAttribute("id");
   if (event.target.textContent != " ") {
     return;
   }
-  const starttext = document.getElementById("gameReady");
-  starttext.classList.add("hide");
+  // removes text after the first play
+  const starttext = document.getElementById("gameStatus");
+  const subtitle = document.querySelector("#gameStatus h3");
+  const paraS = document.querySelectorAll("#gameStatus p");
+  if (starttext.contains(subtitle)) {
+    starttext.removeChild(subtitle);
+    paraS.forEach((para) => starttext.removeChild(para));
+  }
+  //tenho de fazer o mesmo para o AI
+  const div = event.target.closest("div");
+  div.classList.remove("availablesquare");
   gameboard.pickBoardSquare(squareID);
-  const currentBoard = gameboard.currentBoard;
 };
 
 const gameStart = function () {
@@ -189,91 +238,50 @@ const gameStart = function () {
   squares.forEach(function (square) {
     square.addEventListener("click", getSelectedSquare);
   });
+  const divs = document.querySelectorAll(".square");
+  divs.forEach((div) => div.classList.add("availablesquare"));
 };
 
-// const displayCurrentBoard = (function () {
-//   const divs = document.querySelectorAll(".square p");
-//   const divsarray = Array.from(divs, (div) => div);
-//   const currentBoard = gameboard.currentBoard;
-//   const winnerPara = document.getElementById("winner");
-//   const updateDisplay = function (winner, tie, currentBoard) {
-//     for (i = 0; i < divsarray.length; i++) {
-//       divsarray[i].textContent = currentBoard[i][i];
-//     }
-//     if (winner === undefined && tie === undefined) {
-//       winnerPara.textContent = "";
-//     }
-//     if (winner !== undefined) {
-//       divs.forEach(function (square) {
-//         square.removeEventListener("click", getSelectedSquare);
-//       });
-//       let playersNames = getPlayers.selectedNames();
-//       if (winner === "firstplayer") {
-//         if (playersNames[0] === "firstplayerAI") {
-//           winnerPara.textContent = "Computer is the winner!";
-//         } else {
-//           winnerPara.textContent = playersNames[0] + " is the winner!";
-//         }
-//       } else {
-//         if (playersNames[1] === "secondplayerAI") {
-//           winnerPara.textContent = "Computer is the winner!";
-//         } else {
-//           winnerPara.textContent = playersNames[1] + " is the winner!";
-//         }
-//       }
-//     }
-//     if (tie === "It's a tie") {
-//       winnerPara.textContent = "It's a tie!";
-//     }
-//   };
-//   updateDisplay(undefined, undefined, currentBoard);
-//   return { updateDisplay };
-// })();
-
 const displayCurrentBoard = (function () {
-  const divs = document.querySelectorAll(".square p");
-  const divsarray = Array.from(divs, (div) => div);
+  const paragraphs = document.querySelectorAll(".square p");
+  const paraArray = Array.from(paragraphs, (para) => para);
   const currentBoard = gameboard.currentBoard;
-  const winnerPara = document.getElementById("winner");
-  const gameReadyPara = document.getElementById("gameReady");
-  const gameinfopara = document.querySelectorAll(".gameinfo");
+  // displays the current board, by updating the textcontent of each p
   const updateDisplay = function (winner, tie, currentBoard) {
-    for (i = 0; i < divsarray.length; i++) {
-      divsarray[i].textContent = currentBoard[i][i];
+    const gameStatus = document.getElementById("gameStatus");
+    const winnerPara = document.createElement("h3");
+    for (i = 0; i < paraArray.length; i++) {
+      paraArray[i].textContent = currentBoard[i][i];
     }
-    if (winner === undefined && tie === undefined) {
-      //gameReadyPara.textContent = "";
-    }
+    //if a winner is found, removes listeners from squares and displays the winner's name
     if (winner !== undefined) {
-      divs.forEach(function (square) {
+      paragraphs.forEach(function (square) {
         square.removeEventListener("click", getSelectedSquare);
       });
       let playersNames = getPlayers.selectedNames();
       if (winner === "firstplayer") {
-        gameReadyPara.classList.remove("hide");
-        gameinfopara.forEach((para) => (para.textContent = ""));
         if (playersNames[0] === "firstplayerAI") {
           winnerPara.textContent = "Computer is the winner!";
+          gameStatus.appendChild(winnerPara);
         } else {
           winnerPara.textContent = playersNames[0] + " is the winner!";
+          gameStatus.appendChild(winnerPara);
         }
       } else {
-        gameinfopara.forEach((para) => (para.textContent = ""));
-        gameReadyPara.classList.remove("hide");
         if (playersNames[1] === "secondplayerAI") {
           winnerPara.textContent = "Computer is the winner!";
+          gameStatus.appendChild(winnerPara);
         } else {
           winnerPara.textContent = playersNames[1] + " is the winner!";
+          gameStatus.appendChild(winnerPara);
         }
       }
     }
     if (tie === "It's a tie") {
-      gameinfopara.forEach((para) => (para.textContent = ""));
-      gameReadyPara.classList.remove("hide");
       winnerPara.textContent = "It's a tie!";
+      gameStatus.appendChild(winnerPara);
     }
   };
-  updateDisplay(undefined, undefined, currentBoard);
   return { updateDisplay };
 })();
 
@@ -310,14 +318,23 @@ const playerAIfunc = function (AIplayer, winner, tie, currentBoard) {
   }
   if (bestIndex !== undefined) {
     squareSelected = [bestIndex];
+    paraSelectedID = bestIndex;
   } else {
     //if there isn't a win for either player, picks a square randomly
     indexSelected = getRandomIntInclusive(0, availableSquares.length - 1);
+    paraSelectedID = indexSelected;
     squareSelected = Object.getOwnPropertyNames(
       availableSquares[indexSelected]
     );
   }
-  // updates board and check if there's a winner or a tie
+  // colors "O" differently
+  if (playermark === "o") {
+    const paraID = squareSelected[0];
+    const paraSelected = document.getElementById(paraID);
+    paraSelected.classList.add("markO");
+  }
+
+  // updates board with the selected square and checks if there's a winner or a tie
   currentBoard[squareSelected[0]][squareSelected[0]] = playermark;
   winner = checkForWinner(
     squareSelected[0],
@@ -328,7 +345,7 @@ const playerAIfunc = function (AIplayer, winner, tie, currentBoard) {
   if (winner === undefined) {
     tie = checkForTie(currentBoard, winner);
   }
-  // updates page
+  // updates game display
   return displayCurrentBoard.updateDisplay(winner, tie, currentBoard);
 };
 
@@ -361,27 +378,30 @@ const lookForAWinningLine = function (
     [2, 4, 6],
   ];
   let selectedSquare;
-  //checks for 3 in line for currentplayer
+  //checks for possible 3 in line for current AI;
   for (i = 0; i < availableSquares.length; i++) {
+    // get square ID that corresponds to the available square being evaluated
     let indexObj = Number(Object.keys(availableSquares[i]));
     for (j = 0; j < winningArray.length; j++) {
+      // for each array of square IDs that corresponds to a win, checks if it includes the square ID determined before
       let miniarray = winningArray[j];
       if (miniarray.includes(indexObj)) {
+        //fills an array with the existing marks on squares with the IDs of the array being evaluated
         let boardValuesForMiniArray = [];
         for (k = 0; k < miniarray.length; k++) {
           boardValuesForMiniArray.push(
             Object.values(currentBoard[miniarray[k]]).toString()
           );
         }
-
-        // check for 3 in line for either player
         let indexInMiniArray = miniarray.indexOf(indexObj);
+        // fills the index on the new array that corresponds to the square ID, with the playerMark
         boardValuesForMiniArray[indexInMiniArray] = playerMark;
         if (
           boardValuesForMiniArray.every(
             (currentValue) => currentValue === playerMark
           )
         ) {
+          // if there are 3 marks of the current player, the square gets selected
           selectedSquare = indexObj;
           break;
         }
@@ -392,7 +412,7 @@ const lookForAWinningLine = function (
     }
   }
 
-  // checks for 3 in line for otherplayer
+  // if a square wasn't selected on the previous step, repeats the same thing for the other player
   for (i = 0; i < availableSquares.length; i++) {
     let indexObj = Number(Object.keys(availableSquares[i]));
     for (l = 0; l < winningArray.length; l++) {
@@ -422,6 +442,7 @@ const lookForAWinningLine = function (
   }
 };
 
+// if after checking for winners, the board is full and a winner isn't found, it's a tie
 const checkForTie = function (currentBoard, winner) {
   if (winner !== undefined) {
     return;
@@ -456,6 +477,7 @@ const checkForWinner = function (
     [0, 4, 8],
     [2, 4, 6],
   ];
+  //function is called every time a square is filled; creates array with every winning combination that includes the current square
   let miniArraysWithSquare = winningArray.filter((miniarray) =>
     miniarray.includes(Number(currentSquareID))
   );
@@ -463,6 +485,7 @@ const checkForWinner = function (
   let winner;
   for (i = 0; i < miniArraysWithSquare.length; i++) {
     const currentArray = miniArraysWithSquare[i];
+    //gets objects for each index of the winning combination selected previously
     let currentBoardValuesForThisArray = [
       currentBoard[currentArray[0]],
       currentBoard[currentArray[1]],
@@ -473,24 +496,22 @@ const checkForWinner = function (
     currentBoardValuesForThisArray.forEach(function (obj) {
       objectvaluesarray.push(Object.values(obj));
     });
+    // gets values of objects
     let objectvalueOneArray = [
       objectvaluesarray[0][0],
       objectvaluesarray[1][0],
       objectvaluesarray[2][0],
     ];
+    //checks if all marks on the winning combination are equal to current player mark
     let numberMarks = objectvalueOneArray.filter((element) => element === mark)
       .length;
 
+    // if there are 3 players, sets the winner and draws line on canvas of the 3 in line
     if (numberMarks === 3) {
       let playerNames = getPlayers.selectedNames();
       let playerNameWinner;
       winner = currentplayer.getName();
-      if (winner === "firstplayer") {
-        playerNameWinner = playerNames[0];
-      } else {
-        playerNameWinner = playerNames[1];
-      }
-      drawOnCanvas.drawLine(currentArray);
+      drawOnCanvas.drawLine(currentArray, winner);
     }
   }
   return winner;
@@ -505,13 +526,18 @@ const restartgameListener = (function () {
 
 const drawOnCanvas = (function () {
   const canvas = document.querySelector("canvas");
-  canvas.style.zIndex = "1";
   const ctx = canvas.getContext("2d");
-  const drawLine = function (array) {
+  const drawLine = function (array, winner) {
+    canvas.style.zIndex = "1";
     ctx.beginPath();
-    ctx.strokeStyle = "black";
-    ctx.lineWidth = 10;
+    if (winner === "firstplayer") {
+      ctx.strokeStyle = "#2a3e39";
+    } else {
+      ctx.strokeStyle = "#2e7b67";
+    }
+    ctx.lineWidth = 8;
     const startingPoint = array[0];
+    // draws a line starting at the lowest number of the winning combination
     switch (startingPoint) {
       case 0:
         if (array[1] === 1) {
@@ -555,6 +581,3 @@ const drawOnCanvas = (function () {
   };
   return { drawLine, clearCanvas };
 })();
-
-// on start tem de tirar o winner do textcontent
-// se calhar em vez de fazer hide posso so reduzir a altura do gameready
