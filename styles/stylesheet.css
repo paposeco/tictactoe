@@ -10,7 +10,6 @@ html {
 body {
   width: 70%;
   height: 100vh;
-  /* background-color: #e8eceb; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -18,14 +17,12 @@ body {
   box-sizing: border-box;
   font-family: Arvo;
   font-size: 18px;
-  /* gap: 5px; */
   padding: 0px;
   margin: 0px;
 }
 
 button {
   font-family: Arvo;
-  /* background-color: #14352c; */
   background-color: #1b483b;
   color: #e8eceb;
   border: none;
@@ -45,7 +42,6 @@ header {
   width: 700px;
   padding: 30px 100px 10px 100px;
   margin-bottom: 0px;
-  /* background-color: #e8eceb; */
 }
 
 h1 {
@@ -62,7 +58,6 @@ h1 {
 }
 
 #gameboard > div {
-  /* border: 1px solid #14352c; */
   height: 120px;
   width: 120px;
 }
@@ -90,7 +85,6 @@ h1 {
   margin: 0;
   align-self: center;
   color: #2a3e39;
-  /* color: rgb(25, 67, 56); */
 }
 .square {
   display: flex;
@@ -112,7 +106,6 @@ h1 {
 #players {
   height: 160px;
   padding: 10px 100px;
-  /* background-color: #e8eceb; */
   width: 700px;
 }
 #players > p {
@@ -128,7 +121,6 @@ h1 {
   width: 700px;
   justify-content: space-around;
   margin-bottom: 0px;
-  /* background-color: #e8eceb; */
 }
 
 .playersDiv {
@@ -167,7 +159,6 @@ canvas {
   width: 700px;
   margin: 0px;
   padding: 10px 100px;
-  /* background-color: #e8eceb; */
   margin-bottom: 20px;
 }
 
@@ -204,7 +195,6 @@ canvas {
 footer {
   width: 700px;
   padding: 10px 100px;
-  /* background-color: #e8eceb; */
   text-align: center;
 }
 
