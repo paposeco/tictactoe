@@ -1,6 +1,6 @@
 html {
   background-color: #14352c;
-  color: #14352c;
+  color: white;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -10,7 +10,7 @@ html {
 body {
   width: 70%;
   height: 100vh;
-  background-color: #e8eceb;
+  /* background-color: #e8eceb; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -18,14 +18,15 @@ body {
   box-sizing: border-box;
   font-family: Arvo;
   font-size: 18px;
-  gap: 10px;
+  /* gap: 5px; */
   padding: 0px;
   margin: 0px;
 }
 
 button {
   font-family: Arvo;
-  background-color: #14352c;
+  /* background-color: #14352c; */
+  background-color: #1b483b;
   color: #e8eceb;
   border: none;
   outline: none;
@@ -35,14 +36,16 @@ button {
 }
 
 button:hover {
-  background-color: #46685f;
+  background-color: #8ea29d;
   box-shadow: inset 1px 1px 1px #90a49f, 1px 1px 1px #46685f;
   cursor: pointer;
 }
 
 header {
   width: 700px;
-  padding-top: 30px;
+  padding: 30px 100px 10px 100px;
+  margin-bottom: 0px;
+  /* background-color: #e8eceb; */
 }
 
 h1 {
@@ -55,6 +58,7 @@ h1 {
   grid-template-columns: 120px 120px 120px;
   flex-shrink: 0;
   font-family: Yellowtail;
+  background-color: #e8eceb;
 }
 
 #gameboard > div {
@@ -107,10 +111,12 @@ h1 {
 
 #players {
   height: 160px;
-  padding: 10px;
+  padding: 10px 100px;
+  /* background-color: #e8eceb; */
+  width: 700px;
 }
 #players > p {
-  color: #5e7b73;
+  color: #becac7;
   font-size: 17px;
 }
 
@@ -122,14 +128,15 @@ h1 {
   width: 700px;
   justify-content: space-around;
   margin-bottom: 0px;
+  /* background-color: #e8eceb; */
 }
 
 .playersDiv {
   display: flex;
   flex-direction: column;
   width: 160px;
-
   padding: 0px 20px;
+  gap: 5px;
 }
 
 .playersDiv > p {
@@ -157,9 +164,11 @@ canvas {
 
 #gameStatus {
   height: 140px;
-  width: 600px;
+  width: 700px;
   margin: 0px;
-  padding: 0px;
+  padding: 10px 100px;
+  /* background-color: #e8eceb; */
+  margin-bottom: 20px;
 }
 
 #gameStatus > h3 {
@@ -169,7 +178,7 @@ canvas {
 }
 
 #gameStatus > p {
-  color: #5e7b73;
+  color: #becac7;
   font-size: 17px;
 }
 
@@ -190,4 +199,20 @@ canvas {
 .availablesquare:hover {
   cursor: pointer;
   background-color: rgba(70, 104, 95, 0.3);
+}
+
+footer {
+  width: 700px;
+  padding: 10px 100px;
+  /* background-color: #e8eceb; */
+  text-align: center;
+}
+
+footer a {
+  color: #296d5a;
+  text-decoration: none;
+}
+
+footer a:visited {
+  color: #807285;
 }

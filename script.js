@@ -17,6 +17,10 @@ const getPlayers = (function () {
     for (const entry of data) {
       output.push(entry[1]);
     }
+    if (output.length === 0) {
+      alert("You must select the players first.");
+      return;
+    }
     //output[0] is firstplayer for humans and firstplayerAI for computer;
     if (output[0] === "firstplayer") {
       firstplayerName = window.prompt("Name of first player: ", "Player X");
@@ -54,6 +58,7 @@ const getPlayers = (function () {
       );
       setTimeout(gameStart, 700);
     }
+    // at the start of the game displays information about the game
     const starttext = document.getElementById("gameStatus");
     const subtitle = document.createElement("h3");
     const para1 = document.createElement("p");
@@ -110,7 +115,7 @@ const gameboard = (function () {
       { 8: " " },
     ];
     currentplayer = firstplayer;
-    // removes "O" mark class from squares where it was applied before and removes winner/tie text
+    // removes "O" mark class (that colors "O" in a different color) where it was applied before and removes winner/tie text
     const squaresPara = document.querySelectorAll(".markO");
     squaresPara.forEach((square) => square.classList.remove("markO"));
     const subtitle = document.querySelector("#gameStatus h3");
@@ -201,7 +206,6 @@ const gameboard = (function () {
       );
     }
     if (playersNames[1] === "secondplayerAI") {
-      console.log(currentBoard);
       setTimeout(
         playerAIfunc.bind(null, otherplayer, winner, tie, currentBoard),
         300
@@ -227,7 +231,7 @@ const getSelectedSquare = function (event) {
     starttext.removeChild(subtitle);
     paraS.forEach((para) => starttext.removeChild(para));
   }
-  //tenho de fazer o mesmo para o AI
+  //removes hover coloring if the square isn't available
   const div = event.target.closest("div");
   div.classList.remove("availablesquare");
   gameboard.pickBoardSquare(squareID);
@@ -327,12 +331,16 @@ const playerAIfunc = function (AIplayer, winner, tie, currentBoard) {
       availableSquares[indexSelected]
     );
   }
+
+  const paraID = squareSelected[0];
+  const paraSelected = document.getElementById(paraID);
   // colors "O" differently
   if (playermark === "o") {
-    const paraID = squareSelected[0];
-    const paraSelected = document.getElementById(paraID);
     paraSelected.classList.add("markO");
   }
+  //removes hover coloring if the square isn't available
+  const div = paraSelected.closest("div");
+  div.classList.remove("availablesquare");
 
   // updates board with the selected square and checks if there's a winner or a tie
   currentBoard[squareSelected[0]][squareSelected[0]] = playermark;
@@ -541,32 +549,32 @@ const drawOnCanvas = (function () {
     switch (startingPoint) {
       case 0:
         if (array[1] === 1) {
-          ctx.moveTo(15, 60);
-          ctx.lineTo(345, 60);
+          ctx.moveTo(15, 61);
+          ctx.lineTo(345, 61);
         } else if (array[1] === 3) {
-          ctx.moveTo(60, 15);
-          ctx.lineTo(60, 345);
+          ctx.moveTo(61, 15);
+          ctx.lineTo(61, 345);
         } else {
           ctx.moveTo(15, 15);
           ctx.lineTo(345, 345);
         }
         break;
       case 3:
-        ctx.moveTo(15, 180);
-        ctx.lineTo(345, 180);
+        ctx.moveTo(15, 183);
+        ctx.lineTo(345, 183);
         break;
       case 6:
-        ctx.moveTo(15, 300);
-        ctx.lineTo(345, 300);
+        ctx.moveTo(15, 305);
+        ctx.lineTo(345, 305);
         break;
       case 1:
-        ctx.moveTo(180, 15);
-        ctx.lineTo(180, 345);
+        ctx.moveTo(183, 15);
+        ctx.lineTo(183, 345);
         break;
       case 2:
         if (array[1] === 5) {
-          ctx.moveTo(300, 15);
-          ctx.lineTo(300, 345);
+          ctx.moveTo(305, 15);
+          ctx.lineTo(305, 345);
         } else {
           ctx.moveTo(345, 15);
           ctx.lineTo(15, 345);
@@ -577,7 +585,7 @@ const drawOnCanvas = (function () {
   };
   const clearCanvas = function () {
     canvas.style.zIndex = "-1";
-    ctx.clearRect(0, 0, 360, 360);
+    ctx.clearRect(0, 0, 360, 366);
   };
   return { drawLine, clearCanvas };
 })();

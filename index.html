@@ -14,6 +14,12 @@
       type="text/css"
       href="https://fonts.googleapis.com/css?family=Arvo"
     />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.9.0/css/all.css"
+      integrity="sha384-i1LQnF23gykqWXg6jxC2ZbCbUMxyw5gLZY6UiUS98LYV5unm8GWmfkIS6jqJfb4E"
+      crossorigin="anonymous"
+    />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
   </head>
   <body>
@@ -74,10 +80,11 @@
         </div>
       </form>
     </div>
+
     <div id="gameStatus"></div>
 
     <div id="gameboard">
-      <canvas width="360" height="360"></canvas>
+      <canvas width="360" height="366"></canvas>
       <div class="square VB"><p id="0"></p></div>
       <div class="square VB"><p id="1"></p></div>
       <div class="square Bt"><p id="2"></p></div>
@@ -92,7 +99,13 @@
     <div id="restart">
       <button id="restartbutton" type="button">Restart Game</button>
     </div>
-
+    <footer>
+      <p>
+        <a href="https://github.com/paposeco/" alt="github">
+          <span><i class="fab fa-github"></i></span>Fabi</a
+        >
+      </p>
+    </footer>
     <script src="script.js"></script>
   </body>
 </html>
