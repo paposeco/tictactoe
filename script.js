@@ -330,32 +330,12 @@ const playerAIfunc = function (AIplayer, winner, tie, currentBoard) {
     playermark = AIplayer.getPlayerMark();
     currentplayer = AIplayer;
   }
-  // bestIndex = lookForAWinningLine(
-  //   currentplayer,
-  //   currentBoard,
-  //   availableSquares
-  // );
 
-  //console.log(aiboard);
-
+  // runs betterai function to look for the best move
   bestIndex = betterai.stopLooking(aiboard);
-  console.log("bestindex: " + bestIndex);
   squareSelected = [bestIndex];
   paraSelectedID = bestIndex;
 
-  // if (bestIndex !== undefined) {
-  //   squareSelected = [bestIndex];
-  //   paraSelectedID = bestIndex;
-  // } else {
-  //   //if there isn't a win for either player, picks a square randomly
-
-  //   let tempArray = Array.from(currentBoard, (obj) =>
-  //     Object.values(obj).toString()
-  //   );
-  //   indexSelected = betterai(tempArray);
-  //   paraSelectedID = indexSelected;
-  //   squareSelected = [indexSelected];
-  // }
   const paraID = squareSelected[0];
   const paraSelected = document.getElementById(paraID);
 
@@ -397,6 +377,7 @@ const getRandomIntInclusive = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
+//let aiboard = [0, "w0", 0, 0, 0, 0, 0, 0, 0];
 const betterai = (function (boardnewai) {
   const winningArray = [
     [0, 1, 2],
@@ -435,14 +416,38 @@ const betterai = (function (boardnewai) {
     return currentboard;
   };
 
-  // o O também tem de fazer todas as combinaçoes e escolher a melhor
   const combinationsForO = function (currentboard, newpositions) {
     let possible = [];
     const availablespaces = newpositions.length;
     for (let i = 0; i < availablespaces; i++) {
       let workingboard = Array.from(currentboard);
       let tempBoard = Array.from(workingboard);
-      let bestplace = entireboard(tempBoard, "o");
+      let bestplace = stopLookingOWin(tempBoard);
+      if (bestplace === undefined) {
+        bestplace = stopLookingOTie(tempBoard);
+      }
+      if (bestplace !== undefined) {
+        workingboard = fill(bestplace, workingboard);
+        possible.push(workingboard);
+      } else {
+        workingboard = fill(newpositions[i], workingboard);
+        possible.push(workingboard);
+      }
+    }
+    return possible;
+  };
+
+  const combinationsForOForX = function (currentboard, newpositions) {
+    let possible = [];
+    const availablespaces = newpositions.length;
+    for (let i = 0; i < availablespaces; i++) {
+      let workingboard = Array.from(currentboard);
+      let tempBoard = Array.from(workingboard);
+      let bestplace = stopLookingXWin(tempBoard);
+      if (bestplace === undefined) {
+        bestplace = stopLookingXTie(tempBoard);
+      }
+      //      let bestplace = entireboard(tempBoard, "x");
       if (bestplace !== undefined) {
         workingboard = fill(bestplace, workingboard);
         possible.push(workingboard);
@@ -484,6 +489,55 @@ const betterai = (function (boardnewai) {
           boardarrayBackup = fill(availablespots[j], boardarrayBackup);
           availablespots = available(boardarrayBackup);
           let newboardarray = combinationsForO(
+            boardarrayBackup,
+            availablespots
+          );
+          emptyarray.push(newboardarray);
+        }
+      }
+    }
+    return emptyarray;
+  };
+
+  const combinationsForXForO = function (lastarray) {
+    let emptyarray = [];
+    for (let i = 0; i < lastarray.length; i++) {
+      let boardarray = Array.from(lastarray[i]);
+      let availablespots = available(boardarray);
+      for (let j = 0; j < availablespots.length; j++) {
+        let boardarrayBackup = Array.from(boardarray);
+        let tempBoardX = Array.from(boardarray);
+        let bestplaceX = entireboard(tempBoardX, "o");
+        if (bestplaceX !== undefined) {
+          boardarrayBackup = fill(bestplaceX, boardarrayBackup);
+          availablespots = available(boardarrayBackup);
+          if (availablespots.length === 0) {
+            emptyarray.push(boardarrayBackup);
+            continue;
+          }
+          let tempboard = Array.from(boardarrayBackup);
+          let xiswinner = checkforThree(tempboard, "o");
+          if (!xiswinner) {
+            //console.log("not winner");
+            let newboardarray = combinationsForOForX(
+              boardarrayBackup,
+              availablespots
+            );
+            //console.log(newboardarray);
+            emptyarray.push(newboardarray);
+            continue;
+          } else {
+            emptyarray.push(boardarrayBackup);
+            break;
+          }
+        } else {
+          boardarrayBackup = fill(availablespots[j], boardarrayBackup);
+          availablespots = available(boardarrayBackup);
+          if (availablespots.length === 0) {
+            emptyarray.push(boardarrayBackup);
+            continue;
+          }
+          let newboardarray = combinationsForOForX(
             boardarrayBackup,
             availablespots
           );
@@ -538,6 +592,50 @@ const betterai = (function (boardnewai) {
     return emptyarray;
   };
 
+  const combinationsSingleForO = function (array) {
+    let emptyarray = [];
+    let boardarray = Array.from(array);
+    let availablespots = available(boardarray);
+    for (let k = 0; k < availablespots.length; k++) {
+      let boardarraySingle = Array.from(boardarray);
+      let tempBoardX = Array.from(boardarraySingle);
+      let boardarrayBackup = Array.from(boardarray);
+      let bestplaceX = entireboard(tempBoardX, "o");
+      if (bestplaceX !== undefined) {
+        boardarraySingle = fill(bestplaceX, boardarraySingle);
+        availablespots = available(boardarraySingle);
+        let tempboard = Array.from(boardarraySingle);
+        let xiswinner = checkforThree(tempboard, "o");
+        if (!xiswinner) {
+          if (availablespots.length === 0) {
+            emptyarray.push(boardarraySingle);
+            break;
+          } else {
+            let newboardarray = combinationsForOForX(
+              boardarraySingle,
+              availablespots
+            );
+            emptyarray.push(newboardarray);
+            continue;
+          }
+        } else {
+          emptyarray.push(boardarraySingle);
+          break;
+        }
+      } else {
+        boardarraySingle = fill(availablespots[k], boardarraySingle);
+        availablespots = available(boardarraySingle);
+        let newboardarraySecond = combinationsForOForX(
+          boardarraySingle,
+          availablespots
+        );
+        emptyarray.push(newboardarraySecond);
+      }
+    }
+
+    return emptyarray;
+  };
+
   const reducer = function (accumulator, currentValue) {
     if (currentValue !== 0) {
       ++accumulator;
@@ -558,7 +656,6 @@ const betterai = (function (boardnewai) {
         let availablespots = available(workingboard);
         combosTwo.push(combinationsForO(workingboard, availablespots));
       }
-
       combosFour = combinationsForX(combosTwo.flat());
       combosSix = combinationsForX(combosFour.flat());
       combosNine = combinationsForX(combosSix.flat());
@@ -602,10 +699,37 @@ const betterai = (function (boardnewai) {
         combosNine = combosNineArray;
       }
     } else {
-      combosNine = combinationsSingle(thisboard).flat();
+      combosNine = combinationsSingle(thisboard);
+      //console.log(combosNine);
     }
     return combosNine;
   };
+
+  const combosO = function (thisboard) {
+    const initialfilledspots = thisboard.reduce(reducer, 0);
+    let combosFive;
+    let combosSeven;
+    let combosNine;
+    if (initialfilledspots === 1) {
+      let combosThree = combinationsSingleForO(thisboard);
+      combosFive = combinationsForXForO(combosThree.flat());
+      combosSeven = combinationsForXForO(combosFive.flat());
+      combosNine = combinationsForXForO(combosSeven.flat());
+    } else if (initialfilledspots === 3) {
+      combosFive = combinationsSingleForO(thisboard);
+      combosSeven = combinationsForXForO(combosFive.flat());
+      combosNine = combinationsForXForO(combosSeven.flat());
+    } else if (initialfilledspots === 5) {
+      combosSeven = combinationsSingleForO(thisboard).flat();
+      combosNine = combinationsForXForO(combosSeven);
+    } else {
+      combosNine = combinationsSingleForO(thisboard);
+    }
+
+    return combosNine;
+  };
+
+  //console.log(combosO(["w0", 0, 0, 0, 0, 0, 0, 0, 0]));
 
   const transformMark = function (array) {
     for (let i = 0; i < array.length; i++) {
@@ -777,6 +901,27 @@ const betterai = (function (boardnewai) {
     }
     return ev;
   };
+  const calculateValueO = function (array) {
+    let ev = 0;
+    for (let k = 0; k < winningArray.length; k++) {
+      const currentarray = winningArray[k];
+      const valueOnBoard = [
+        array[currentarray[0]],
+        array[currentarray[1]],
+        array[currentarray[2]],
+      ];
+      if (valueOnBoard.every((element) => element === "o")) {
+        ev += 10;
+        break;
+      } else if (valueOnBoard.every((element) => element === "x")) {
+        ev += -10;
+        break;
+      } else {
+        ev += 0;
+      }
+    }
+    return ev;
+  };
 
   const stopLooking = function (boardnewai) {
     const allcombos = combos(boardnewai);
@@ -794,8 +939,6 @@ const betterai = (function (boardnewai) {
         ev = calculateValue(boardStop);
         if (ev === 10) {
           winningBoards.push(allcombos[i]);
-          //          goodboard = allcombos[i];
-          //        break;
           continue;
         }
       }
@@ -803,7 +946,7 @@ const betterai = (function (boardnewai) {
         let winningplacesOptions = winningBoards.length;
         let randomBoard = getRandomIntInclusive(0, winningplacesOptions - 1);
         goodboard = winningBoards[randomBoard];
-        console.log(goodboard);
+        //console.log(goodboard);
       }
       if (goodboard === undefined) {
         const freshAllCombos = combos(boardnewai);
@@ -811,10 +954,11 @@ const betterai = (function (boardnewai) {
           let ev;
           const newtempboard = Array.from(freshAllCombos[j]);
           const newboard = transformMark(newtempboard);
+          ev = calculateValue(newboard);
           if (ev === 0) {
             console.log("tie");
             goodboard = freshAllCombos[j];
-            break;
+            continue;
           }
         }
       }
@@ -840,95 +984,164 @@ const betterai = (function (boardnewai) {
     return goodspot;
   };
 
+  const stopLookingXWin = function (boardnewai) {
+    const allcombos = combos(boardnewai);
+    let goodboard;
+    let goodspot;
+    const numbercombos = allcombos.length;
+    if (numbercombos === 9 && !Array.isArray(allcombos[0])) {
+      goodboard = allcombos;
+    } else {
+      let winningBoards = [];
+      for (let i = 0; i < allcombos.length; i++) {
+        let ev;
+        const tempboard = Array.from(allcombos[i]);
+        const boardStop = transformMark(tempboard);
+        ev = calculateValue(boardStop);
+        if (ev === 10) {
+          goodboard = allcombos[i];
+          break;
+        }
+      }
+    }
+
+    if (goodboard !== undefined) {
+      const onlyZero = (currentValue) => currentValue === 0;
+      if (aiboard.every(onlyZero)) {
+        goodspot = goodboard.findIndex((element) => element === "w0");
+      } else {
+        const arrayToSort = Array.from(aiboard);
+        arrayToSort.sort();
+        const largestFilled = arrayToSort[arrayToSort.length - 1];
+        const largestFilledNumber = Number(largestFilled.slice(1));
+        goodspot = goodboard.findIndex(
+          (element) => element === "w" + (largestFilledNumber + 1)
+        );
+      }
+    }
+    return goodspot;
+  };
+  const stopLookingXTie = function (boardnewai) {
+    const allcombos = combos(boardnewai);
+    let goodboard;
+    let goodspot;
+    const numbercombos = allcombos.length;
+    if (numbercombos === 9 && !Array.isArray(allcombos[0])) {
+      goodboard = allcombos;
+    } else {
+      for (let j = 0; j < allcombos.length; j++) {
+        let ev;
+        const newtempboard = Array.from(allcombos[j]);
+        const newboard = transformMark(newtempboard);
+        ev = calculateValue(newboard);
+        if (ev === 0) {
+          console.log("tie");
+          goodboard = allcombos[j];
+          break;
+        }
+      }
+    }
+
+    if (goodboard === undefined) {
+      // there are only lose positions available. also works for when AI is O
+      goodboard = allcombos[0];
+    }
+
+    const onlyZero = (currentValue) => currentValue === 0;
+    if (aiboard.every(onlyZero)) {
+      goodspot = goodboard.findIndex((element) => element === "w0");
+    } else {
+      const arrayToSort = Array.from(aiboard);
+      arrayToSort.sort();
+      const largestFilled = arrayToSort[arrayToSort.length - 1];
+      const largestFilledNumber = Number(largestFilled.slice(1));
+      goodspot = goodboard.findIndex(
+        (element) => element === "w" + (largestFilledNumber + 1)
+      );
+    }
+    return goodspot;
+  };
+
+  const stopLookingOWin = function (boardnewai) {
+    const allcombos = combosO(boardnewai);
+    let goodboard;
+    let goodspot;
+    const numbercombos = allcombos.length;
+    if (numbercombos === 9 && !Array.isArray(allcombos[0])) {
+      goodboard = allcombos;
+    } else {
+      let winningBoards = [];
+      for (let i = 0; i < allcombos.length; i++) {
+        let ev;
+        const tempboard = Array.from(allcombos[i]);
+        const boardStop = transformMark(tempboard);
+        ev = calculateValueO(boardStop);
+        if (ev === 10) {
+          goodboard = allcombos[i];
+          break;
+        }
+      }
+    }
+    if (goodboard !== undefined) {
+      const onlyZero = (currentValue) => currentValue === 0;
+      if (boardnewai.every(onlyZero)) {
+        goodspot = goodboard.findIndex((element) => element === "w0");
+      } else {
+        const arrayToSort = Array.from(boardnewai);
+        arrayToSort.sort();
+        const largestFilled = arrayToSort[arrayToSort.length - 1];
+        const largestFilledNumber = Number(largestFilled.slice(1));
+        goodspot = goodboard.findIndex(
+          (element) => element === "w" + (largestFilledNumber + 1)
+        );
+      }
+    }
+    return goodspot;
+  };
+
+  const stopLookingOTie = function (boardnewai) {
+    const allcombos = combosO(boardnewai);
+    let goodboard;
+    let goodspot;
+    const numbercombos = allcombos.length;
+    if (numbercombos === 9 && !Array.isArray(allcombos[0])) {
+      goodboard = allcombos;
+    } else {
+      for (let j = 0; j < allcombos.length; j++) {
+        let ev;
+        const newtempboard = Array.from(allcombos[j]);
+        const newboard = transformMark(newtempboard);
+        ev = calculateValueO(newboard);
+        if (ev === 0) {
+          //console.log("tie");
+          goodboard = allcombos[j];
+          break;
+        }
+      }
+    }
+
+    if (goodboard === undefined) {
+      // there are only lose positions available. also works for when AI is O
+      goodboard = allcombos[0];
+    }
+
+    const onlyZero = (currentValue) => currentValue === 0;
+    if (boardnewai.every(onlyZero)) {
+      goodspot = goodboard.findIndex((element) => element === "w0");
+    } else {
+      const arrayToSort = Array.from(boardnewai);
+      arrayToSort.sort();
+      const largestFilled = arrayToSort[arrayToSort.length - 1];
+      const largestFilledNumber = Number(largestFilled.slice(1));
+      goodspot = goodboard.findIndex(
+        (element) => element === "w" + (largestFilledNumber + 1)
+      );
+    }
+    return goodspot;
+  };
+
   return { available, fill, stopLooking };
 })();
-
-const lookForAWinningLine = function (
-  currentplayer,
-  currentBoard,
-  availableSquares
-) {
-  const playerMark = currentplayer.getPlayerMark();
-  let otherplayerMark;
-  if (currentplayer.getName() === "firstplayer") {
-    otherplayerMark = "o";
-  } else {
-    otherplayerMark = "×";
-  }
-  const winningArray = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-  let selectedSquare;
-  //checks for possible 3 in line for current AI;
-  for (let i = 0; i < availableSquares.length; i++) {
-    // get square ID that corresponds to the available square being evaluated
-    let indexObj = Number(Object.keys(availableSquares[i]));
-    for (let j = 0; j < winningArray.length; j++) {
-      // for each array of square IDs that corresponds to a win, checks if it includes the square ID determined before
-      let miniarray = winningArray[j];
-      if (miniarray.includes(indexObj)) {
-        //fills an array with the existing marks on squares with the IDs of the array being evaluated
-        let boardValuesForMiniArray = [];
-        for (let k = 0; k < miniarray.length; k++) {
-          boardValuesForMiniArray.push(
-            Object.values(currentBoard[miniarray[k]]).toString()
-          );
-        }
-        let indexInMiniArray = miniarray.indexOf(indexObj);
-        // fills the index on the new array that corresponds to the square ID, with the playerMark
-        boardValuesForMiniArray[indexInMiniArray] = playerMark;
-        if (
-          boardValuesForMiniArray.every(
-            (currentValue) => currentValue === playerMark
-          )
-        ) {
-          // if there are 3 marks of the current player, the square gets selected
-          selectedSquare = indexObj;
-          break;
-        }
-      }
-    }
-    if (selectedSquare !== undefined) {
-      return selectedSquare;
-    }
-  }
-
-  // if a square wasn't selected on the previous step, repeats the same thing for the other player
-  for (let i = 0; i < availableSquares.length; i++) {
-    let indexObj = Number(Object.keys(availableSquares[i]));
-    for (let l = 0; l < winningArray.length; l++) {
-      let miniarray = winningArray[l];
-      if (miniarray.includes(indexObj)) {
-        let boardValuesForMiniArray = [];
-        for (let m = 0; m < miniarray.length; m++) {
-          boardValuesForMiniArray.push(
-            Object.values(currentBoard[miniarray[m]]).toString()
-          );
-        }
-        let indexInMiniArray = miniarray.indexOf(indexObj);
-        boardValuesForMiniArray[indexInMiniArray] = otherplayerMark;
-        if (
-          boardValuesForMiniArray.every(
-            (currentValue) => currentValue === otherplayerMark
-          )
-        ) {
-          selectedSquare = indexObj;
-          break;
-        }
-      }
-    }
-    if (selectedSquare !== undefined) {
-      return selectedSquare;
-    }
-  }
-};
 
 // if after checking for winners, the board is full and a winner isn't found, it's a tie
 const checkForTie = function (currentBoard, winner) {
@@ -1071,3 +1284,4 @@ const drawOnCanvas = (function () {
 })();
 
 //restart button sem jogadores nao deixa joga r
+// se so selccionar um jogador deixa jogar na mesma??
