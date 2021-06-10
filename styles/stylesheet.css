@@ -1,10 +1,10 @@
 html {
-  background-color: #14352c;
   color: white;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  background-color: #14352c;
 }
 
 body {
@@ -40,12 +40,16 @@ button:hover {
 
 header {
   width: 700px;
-  padding: 30px 100px 10px 100px;
+  padding-top: 30px;
+  /* padding: 30px 100px 10px 100px; */
   margin-bottom: 0px;
+  flex-shrink: 0;
+  /* border-bottom: 2px dotted #fb1; */
 }
 
 h1 {
   text-align: left;
+  color: #fb1;
 }
 
 #gameboard {
@@ -63,16 +67,20 @@ h1 {
 }
 
 .VB {
-  border-right: 3px solid #14352c;
-  border-bottom: 3px solid #14352c;
+  border-right: 3px solid #fb1;
+  border-bottom: 3px solid #fb1;
+  /* border-right: 3px solid #14352c; */
+  /* border-bottom: 3px solid #14352c; */
 }
 
 .Bt {
-  border-bottom: 3px solid #14352c;
+  border-bottom: 3px solid #fb1;
+  /* border-bottom: 3px solid #14352c; */
 }
 
 .Vt {
-  border-right: 3px solid #14352c;
+  /* border-right: 3px solid #14352c; */
+  border-right: 3px solid #fb1;
 }
 
 .square > p {
@@ -205,4 +213,48 @@ footer a {
 
 footer a:visited {
   color: #807285;
+}
+
+@media screen and (max-width: 710px) {
+  #players {
+    width: 95vw;
+    height: 275px;
+    padding: 0;
+  }
+  #playersinfoAI {
+    width: 95vw;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .playersDiv {
+    width: 125px;
+    /* padding-left: 40px; */
+  }
+  .labelInput {
+    padding-left: 5px;
+  }
+  header {
+    width: 100vw;
+    padding-left: 20px;
+  }
+  body {
+    width: 100vw;
+    height: 100%;
+  }
+  #gameboard {
+    grid-template-columns: 115px 115px 115px;
+  }
+  #gameboard > div {
+    width: 115px;
+    height: 115px;
+  }
+  #gameStatus {
+    width: 90vw;
+    height: 150px;
+  }
+  /* for smaller screens, the winning line isn't drawn*/
+  #canvasforlines {
+    height: 0px;
+    width: 0px;
+  }
 }

@@ -1189,9 +1189,9 @@ const drawOnCanvas = (function () {
     canvas.style.zIndex = "1";
     ctx.beginPath();
     if (winner === "firstplayer") {
-      ctx.strokeStyle = "#2a3e39";
+      ctx.strokeStyle = "#fb1";
     } else {
-      ctx.strokeStyle = "#2e7b67";
+      ctx.strokeStyle = "#fb1";
     }
     ctx.lineWidth = 8;
     const startingPoint = array[0];
