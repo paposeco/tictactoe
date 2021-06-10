@@ -252,6 +252,9 @@ footer a:visited {
     width: 90vw;
     height: 150px;
   }
+  #footer {
+    width: 100vw;
+  }
   /* for smaller screens, the winning line isn't drawn*/
   #canvasforlines {
     height: 0px;
