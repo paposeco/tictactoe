@@ -521,8 +521,11 @@ const betterai = (function (boardnewai) {
       combosEight = combinationsForCurrentPlayer(combosSix, "x");
     } else if (initialfilledspots === 4) {
       let combosSixTemp = combinationsSingle(thisboard, "x");
-
-      combosSix = flattenArray(combosSixTemp);
+      if (combosSixTemp.length === 9 && !Array.isArray(combosSixTemp[0])) {
+        combosSix = combosSixTemp;
+      } else {
+        combosSix = flattenArray(combosSixTemp);
+      }
       let temparray = [];
       if (combosSix.length === 9 && !Array.isArray(combosSix[0])) {
         let isOwinner = checkforThree(combosSix, "o");
@@ -695,78 +698,3 @@ const betterai = (function (boardnewai) {
 })();
 
 console.log(betterai.bestspot(aiboard, "x"));
-
-//console.log(betterai.bestspot([aiboard], "x"));
-
-// const bestspotFinal = function (boardnewai, mark) {
-//   let allcombos;
-//   if (mark === "x") {
-//     allcombos = combos(boardnewai);
-//   } else {
-//     allcombos = combosO(boardnewai);
-//   }
-//   const allcombosBackup = Array.from(allcombos);
-//   let goodboard;
-//   let goodspot;
-//   const numbercombos = allcombos.length;
-//   if (numbercombos === 9 && !Array.isArray(allcombos[0])) {
-//     goodboard = allcombos;
-//   } else {
-//     let winningBoards = [];
-//     for (let i = 0; i < allcombos.length; i++) {
-//       let ev;
-//       if (allcombos[i].length === 0) {
-//         continue;
-//       }
-//       const tempboard = Array.from(allcombos[i]);
-//       const tempboardFlat = tempboard.flat();
-//       const tempboardTransformed = transformMark(tempboardFlat);
-//       ev = calculateValue(tempboardTransformed, mark);
-//       if (ev === 10) {
-//         winningBoards.push(tempboardFlat);
-//         continue;
-//       }
-//     }
-//     if (winningBoards.length > 0) {
-//       let winningplacesOptions = winningBoards.length;
-//       let randomBoard = getRandomIntInclusive(0, winningplacesOptions - 1);
-//       goodboard = winningBoards[randomBoard];
-//     }
-//     if (goodboard === undefined) {
-//       let tieBoards = [];
-//       for (let j = 0; j < allcombosBackup.length; j++) {
-//         let ev;
-//         const tempboard = Array.from(allcombosBackup[j]);
-//         const tempboardFlat = tempboard.flat();
-//         const tempboardTransformed = transformMark(tempboardFlat);
-//         ev = calculateValue(tempboardTransformed, mark);
-
-//         if (ev === 0) {
-//           tieBoards.push(tempboardFlat);
-//           continue;
-//         }
-//       }
-//       if (tieBoards.length > 0) {
-//         let tieplacesOptions = tieBoards.length;
-//         let randomBoard = getRandomIntInclusive(0, tieplacesOptions - 1);
-//         goodboard = tieBoards[randomBoard];
-//       }
-//     }
-//   }
-
-//   if (goodboard !== undefined) {
-//     const onlyZero = (currentValue) => currentValue === 0;
-//     if (boardnewai.every(onlyZero)) {
-//       goodspot = goodboard.findIndex((element) => element === "w0");
-//     } else {
-//       const arrayToSort = Array.from(boardnewai);
-//       arrayToSort.sort();
-//       const largestFilled = arrayToSort[arrayToSort.length - 1];
-//       const largestFilledNumber = Number(largestFilled.slice(1));
-//       goodspot = goodboard.findIndex(
-//         (element) => element === "w" + (largestFilledNumber + 1)
-//       );
-//     }
-//   }
-//   return goodspot;
-// };
