@@ -65,7 +65,7 @@ const getPlayers = (function () {
     const para2 = document.createElement("p");
     subtitle.textContent = "Game is ready!";
     para1.textContent =
-      "Player 1 picks a square. Player 2 picks next. If you are playing against the computer, it will play automatically.";
+      "Player X picks a square. Player O picks next. If you are playing against the computer, it will play automatically.";
     para2.textContent =
       "Continue until one player fills a line with 3 crosses or circles.";
     starttext.appendChild(subtitle);
