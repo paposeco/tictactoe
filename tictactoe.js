@@ -125,7 +125,7 @@ const betterai = (function (boardnewai) {
         if (newarray.every((element) => element === firstmark)) {
           zeroLocation = valueOnBoard.findIndex((element) => element === 0);
           goodindex = currentarray[zeroLocation];
-          return [true, goodindex];
+          return goodindex;
         } else {
           continue;
         }
@@ -156,7 +156,7 @@ const betterai = (function (boardnewai) {
         if (newarray.every((element) => element === secondmark)) {
           zeroLocation = valueOnBoard.findIndex((element) => element === 0);
           goodindex = currentarray[zeroLocation];
-          return [true, goodindex];
+          return goodindex;
         } else {
           continue;
         }
@@ -176,27 +176,15 @@ const betterai = (function (boardnewai) {
 
     if (mark === "o") {
       let checkForTwoO = checkForTwo(currentboard, "o", "x");
-      if (checkForTwoO !== undefined && checkForTwoO[0] === true) {
-        selected = checkForTwoO[1];
+      if (checkForTwoO !== undefined) {
+        selected = checkForTwoO;
         return selected;
-      } else {
-        let checkForTwoX = checkForTwo(currentboard, "x", "o");
-        if (checkForTwoX !== undefined && checkForTwoX[0] === true) {
-          selected = checkForTwoX[1];
-          return selected;
-        }
       }
     } else {
       let checkForTwoX = checkForTwo(currentboard, "x", "o");
-      if (checkForTwoX !== undefined && checkForTwoX[0] === true) {
-        selected = checkForTwoX[1];
+      if (checkForTwoX !== undefined) {
+        selected = checkForTwoX;
         return selected;
-      } else {
-        let checkForTwoO = checkForTwo(currentboard, "o", "x");
-        if (checkForTwoO !== undefined && checkForTwoO[0] === true) {
-          selected = checkForTwoO[1];
-          return selected;
-        }
       }
     }
   };
@@ -672,7 +660,11 @@ const betterai = (function (boardnewai) {
       combosNine = combinationsForCurrentPlayer(combosSeven, "o");
     } else if (initialfilledspots === 5) {
       let combosSevenTemp = combinationsSingle(thisboard, "o");
-      combosSeven = flattenArray(combosSevenTemp);
+      if (combosSevenTemp.length === 9 && !Array.isArray(combosSevenTemp[0])) {
+        combosSeven = combosSevenTemp;
+      } else {
+        combosSeven = flattenArray(combosSevenTemp);
+      }
       let temparray = [];
       if (combosSeven.length === 9 && !Array.isArray(combosSeven[0])) {
         let isxwinner = checkforThree(combosSeven, "x");
@@ -703,6 +695,8 @@ const betterai = (function (boardnewai) {
 })();
 
 console.log(betterai.bestspot(aiboard, "x"));
+
+//console.log(betterai.bestspot([aiboard], "x"));
 
 // const bestspotFinal = function (boardnewai, mark) {
 //   let allcombos;
