@@ -1,6 +1,4 @@
 let aiboard = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-//let aiboard = ["w1", "w2", 0, 0, 0, 0, 0, "w0", 0];
-
 const getRandomIntInclusive = function (min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -41,9 +39,6 @@ const betterai = (function (boardnewai) {
     }
     return accumulator;
   };
-
-  // para por o w6 alguma coisa nao esta bem
-  ["w5", "w6", "w1", "w3", "w2", "w0", "w7", 0, "w4"];
 
   const transformMark = function (array) {
     const temparray = Array.from(array);
@@ -321,7 +316,6 @@ const betterai = (function (boardnewai) {
     let allcombos;
     if (mark === "x") {
       allcombos = combos(boardnewai);
-      //      console.log(allcombos);
     } else {
       allcombos = combosO(boardnewai);
     }
@@ -338,35 +332,36 @@ const betterai = (function (boardnewai) {
         const tempboard = Array.from(allcombos[i]);
         const tempboardFlat = tempboard.flat();
         const tempboardTransformed = transformMark(tempboardFlat);
-        console.log(tempboardFlat);
         ev = calculateValue(tempboardTransformed, mark);
-        //console.log(ev);
         if (ev === 10) {
           winningBoards.push(tempboardFlat);
           continue;
         }
       }
-      console.log(winningBoards);
       if (winningBoards.length > 0) {
         let winningplacesOptions = winningBoards.length;
         let randomBoard = getRandomIntInclusive(0, winningplacesOptions - 1);
         goodboard = winningBoards[randomBoard];
       }
       if (goodboard === undefined) {
+        let tieBoards = [];
         for (let j = 0; j < allcombosBackup.length; j++) {
           let ev;
           const tempboard = Array.from(allcombosBackup[j]);
           const tempboardFlat = tempboard.flat();
           const tempboardTransformed = transformMark(tempboardFlat);
           ev = calculateValue(tempboardTransformed, mark);
+
           if (ev === 0) {
-            goodboard = tempboardFlat;
-            break;
+            tieBoards.push(tempboardFlat);
+            continue;
           }
         }
-      }
-      if (winningBoards.length > 0) {
-        //console.log(winningBoards);
+        if (tieBoards.length > 0) {
+          let tieplacesOptions = tieBoards.length;
+          let randomBoard = getRandomIntInclusive(0, tieplacesOptions - 1);
+          goodboard = tieBoards[randomBoard];
+        }
       }
     }
 
@@ -374,7 +369,6 @@ const betterai = (function (boardnewai) {
       const onlyZero = (currentValue) => currentValue === 0;
       if (boardnewai.every(onlyZero)) {
         goodspot = goodboard.findIndex((element) => element === "w0");
-        //console.log("goodspot" + goodspot);
       } else {
         const arrayToSort = Array.from(boardnewai);
         arrayToSort.sort();
@@ -401,7 +395,6 @@ const betterai = (function (boardnewai) {
       return currentboard;
     }
     let tempBoard = Array.from(currentboard);
-    //console.log(tempBoard);
     let bestplace = bestspot(tempBoard, "o");
     if (bestplace !== -1 && bestplace !== undefined) {
       let workingboard = Array.from(currentboard);
@@ -477,18 +470,12 @@ const betterai = (function (boardnewai) {
       } else {
         for (let j = 0; j < availablespots.length; j++) {
           let freshboardarray = Array.from(boardarray);
-          //console.log("")
-          //console.log(boardarray);
           freshboardarray = fill(availablespots[j], freshboardarray);
           let newavailablespots = available(freshboardarray);
-          //console.log("bestplace undefined");
-          //console.log(freshboardarray);
           let newboardarray = combinationsForO(
             freshboardarray,
             newavailablespots
           );
-          //console.log("both x and o filled");
-          //console.log(newboardarray);
           emptyarray.push(newboardarray);
         }
       }
@@ -509,18 +496,10 @@ const betterai = (function (boardnewai) {
       let boardarray = Array.from(lastarray[i]);
       let availablespots = available(boardarray);
       let tempBoardX = Array.from(boardarray);
-      //if(availablespots.length )
       let bestplaceO = entireboard(tempBoardX, "o");
-      //console.log("bestplace: " + bestplaceO);
       if (bestplaceO !== undefined) {
-        // console.log("boardarray");
-        //console.log(boardarray);
         boardarray = fill(bestplaceO, boardarray);
-        // console.log("filled bestplace");
-        // console.log(boardarray);
         availablespots = available(boardarray);
-        // console.log("available spots");
-        // console.log(availablespots);
         let tempboard = Array.from(boardarray);
         let oiswinner = checkforThree(tempboard, "o");
         let xiswinner = checkforThree(tempboard, "x");
@@ -551,7 +530,6 @@ const betterai = (function (boardnewai) {
   };
 
   const combinationsSingle = function (array) {
-    //console.log(array);
     if (array.length === 9 && !Array.isArray(array[0])) {
       let tempboard = Array.from(array);
       let oiswinner = checkforThree(tempboard, "o");
@@ -563,7 +541,6 @@ const betterai = (function (boardnewai) {
         return array;
       }
     }
-    //console.log("continuou");
     let emptyarray = [];
     let boardarray = Array.from(array);
     let boardarrayBackup = Array.from(array);
@@ -587,20 +564,13 @@ const betterai = (function (boardnewai) {
       }
     } else {
       for (let i = 0; i < availablespots.length; i++) {
-        //console.log("bestplace undefined");
         let freshboardarray = Array.from(array);
-        // console.log("before filling");
-        //console.log(freshboardarray);
         freshboardarray = fill(availablespots[i], freshboardarray);
-        //console.log("x filled");
-        //console.log(freshboardarray);
         let newavailablespots = available(freshboardarray);
         let newboardarraySecond = combinationsForO(
           freshboardarray,
           newavailablespots
         );
-        // console.log("o filled");
-        // console.log(newboardarraySecond);
         emptyarray.push(newboardarraySecond);
       }
     }
@@ -612,7 +582,6 @@ const betterai = (function (boardnewai) {
       let tempboard = Array.from(array);
       let xiswinner = checkforThree(tempboard, "x");
       let oiswinner = checkforThree(tempboard, "o");
-      //console.log(xiswinner);
       if (xiswinner) {
         return array;
       }
@@ -625,7 +594,6 @@ const betterai = (function (boardnewai) {
     let boardarrayBackup = Array.from(array);
     let availablespots = available(boardarray);
     let bestplaceO = entireboard(boardarray, "o");
-    //console.log("bestplace:" + bestplaceO);
     if (bestplaceO !== undefined) {
       boardarrayBackup = fill(bestplaceO, boardarrayBackup);
       availablespots = available(boardarrayBackup);
@@ -638,7 +606,6 @@ const betterai = (function (boardnewai) {
         if (owinner) {
           return boardarrayBackup;
         } else if (xiswinner) {
-          // for when there are two bestplaces and in both O loses
           return;
         } else {
           let newboardarray = combinationsForOForX(
@@ -646,8 +613,6 @@ const betterai = (function (boardnewai) {
             availablespots
           );
           emptyarray.push(newboardarray);
-          //console.log("bestplace exists");
-          //console.log(emptyarray);
           return emptyarray;
         }
       }
@@ -710,7 +675,6 @@ const betterai = (function (boardnewai) {
       }
       combosSix = Array.from(temparray);
       combosEight = combinationsForX(combosSix);
-      //console.log(combosEight);
     } else if (initialfilledspots === 2) {
       let combosFourTemp = combinationsSingle(thisboard);
       combosFour = flattenArray(combosFourTemp);
@@ -741,7 +705,6 @@ const betterai = (function (boardnewai) {
       let combosSixTemp = combinationsSingle(thisboard);
 
       combosSix = flattenArray(combosSixTemp);
-      // console.log(combosSix);
       let temparray = [];
       if (combosSix.length === 9 && !Array.isArray(combosSix[0])) {
         let isOwinner = checkforThree(combosSix, "o");
@@ -762,11 +725,8 @@ const betterai = (function (boardnewai) {
         }
       }
       combosSix = Array.from(temparray);
-      //console.log(combosSix);
       combosEight = combinationsForX(combosSix);
-      //console.log(combosEight);
     } else {
-      //console.log(thisboard);
       combosEight = combinationsSingle(thisboard);
     }
     return combosEight;
@@ -774,9 +734,6 @@ const betterai = (function (boardnewai) {
 
   const combosO = function (thisboard) {
     const initialfilledspots = thisboard.reduce(reducer, 0);
-    //console.log("inside combosO");
-    // console.log(thisboard);
-    // console.log(initialfilledspots);
     let combosThree;
     let combosFive;
     let combosSeven;
@@ -821,7 +778,6 @@ const betterai = (function (boardnewai) {
           let aboard = combosSeven[i];
           let isxwinner = checkforThree(aboard, "x");
           if (isxwinner) {
-            //console.log(aboard);
             continue;
           } else {
             temparray2.push(combosSeven[i]);
@@ -887,8 +843,6 @@ const betterai = (function (boardnewai) {
     } else if (initialfilledspots === 5) {
       let combosSevenTemp = combinationsSingleForO(thisboard);
       combosSeven = flattenArray(combosSevenTemp);
-      //console.log("combosSeven");
-      //console.log(combosSeven);
       let temparray = [];
       if (combosSeven.length === 9 && !Array.isArray(combosSeven[0])) {
         let isxwinner = checkforThree(combosSeven, "x");
@@ -910,8 +864,6 @@ const betterai = (function (boardnewai) {
       }
       combosSeven = Array.from(temparray);
       combosNine = combinationsForXForO(combosSeven);
-      //console.log("combosnine");
-      //console.log(combosNine);
     } else {
       combosNine = combinationsSingleForO(thisboard);
     }
@@ -920,10 +872,4 @@ const betterai = (function (boardnewai) {
   return { available, fill, bestspotFinal, combinationsSingle, combos };
 })();
 
-//betterai.combosO([0, "w0", "w3", "w1", 0, 0, "w2", 0, "w4"]);
-//betterai.combos(["w0", "w1", "w2", "w3", 0, 0, 0, 0, 0]);
-//console.log(betterai.bestspot(["w0", "w1", "w2", 0, 0, 0, 0, 0, 0], "o"));
 console.log(betterai.bestspotFinal(aiboard, "x"));
-
-// nao sei se o bestspot fica com acesso a tudo ou se so à ultima posiçao
-//console.log(betterai.bestspotFinal(["w0", 0, 0, 0, 0, 0, 0, 0, 0], "o"));
