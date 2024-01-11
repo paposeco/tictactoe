@@ -1,10 +1,10 @@
 html {
-  color: white;
+  color: black;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  background-color: #14352c;
+  background-color: white;
 }
 
 body {
@@ -23,18 +23,19 @@ body {
 
 button {
   font-family: Arvo;
-  background-color: #1b483b;
-  color: #e8eceb;
+  background-color: #5df2c6;
+  color: black;
   border: none;
   outline: none;
   font-weight: bold;
-  box-shadow: inset 1px 1px 1px #46685f, 1px 1px 1px #46685f;
+  box-shadow: inset 1px 1px 1px #9df7dc, 1px 1px 1px #9df7dc;
   font-size: 17px;
 }
 
 button:hover {
-  background-color: #8ea29d;
-  box-shadow: inset 1px 1px 1px #90a49f, 1px 1px 1px #46685f;
+  background-color: #ff2273;
+  box-shadow: inset 1px 1px 1px #ff7aab, 1px 1px 1px #ff7aab;
+  color: white;
   cursor: pointer;
 }
 
@@ -49,7 +50,8 @@ header {
 
 h1 {
   text-align: left;
-  color: #fb1;
+  /**color: #fb1;**/
+  color: #ff2273;
 }
 
 #gameboard {
@@ -67,20 +69,20 @@ h1 {
 }
 
 .VB {
-  border-right: 3px solid #fb1;
-  border-bottom: 3px solid #fb1;
+  border-right: 3px solid #ff2273;
+  border-bottom: 3px solid #ff2273;
   /* border-right: 3px solid #14352c; */
   /* border-bottom: 3px solid #14352c; */
 }
 
 .Bt {
-  border-bottom: 3px solid #fb1;
+  border-bottom: 3px solid #ff2273;
   /* border-bottom: 3px solid #14352c; */
 }
 
 .Vt {
   /* border-right: 3px solid #14352c; */
-  border-right: 3px solid #fb1;
+  border-right: 3px solid #ff2273;
 }
 
 .square > p {
@@ -117,7 +119,7 @@ h1 {
   width: 700px;
 }
 #players > p {
-  color: #becac7;
+  color: black;
   font-size: 17px;
 }
 
@@ -177,7 +179,8 @@ canvas {
 }
 
 #gameStatus > p {
-  color: #becac7;
+  /**color: #becac7;**/
+  color: black;
   font-size: 17px;
 }
 
@@ -192,7 +195,8 @@ canvas {
 }
 
 .markO {
-  color: #2e7b67 !important;
+  /**color: #2e7b67 !important;**/
+  color: #00bfc3 !important;
 }
 
 .availablesquare:hover {
